@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"log"
-
 	"github.com/gin-gonic/gin"
 	"github.com/n4mlz/sns-backend/validation"
 )
@@ -22,7 +20,7 @@ func (h *Handler) SetupRoutes(firebaseApp *validation.FirebaseApp) {
 	firebase.Use(authMiddleware(*firebaseApp))
 	{
 		firebase.GET("", func(ctx *gin.Context) {
-			log.Print("aaaaa")
+			// some action
 		})
 	}
 }
