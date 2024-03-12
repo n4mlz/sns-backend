@@ -1,18 +1,23 @@
 package main
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
+	"github.com/n4mlz/sns-backend/handler"
+	"github.com/n4mlz/sns-backend/validation"
 )
 
 func main() {
 	r := gin.Default()
-	r.GET("/api/data", func(c *gin.Context) {
-		response := gin.H{
-			"message": "Hello World!",
-		}
-		c.JSON(http.StatusOK, response)
-	})
-	r.Run()
+	r.ContextWithFallback = true
+
+	h := handler.NewHandler(r)
+
+	app, err := validation.NewFirebaseApp()
+	if err != nil {
+		return
+	}
+
+	h.SetupRoutes(app)
+
+	h.Router.Run(":8080")
 }
