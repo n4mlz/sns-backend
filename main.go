@@ -12,12 +12,12 @@ func main() {
 
 	h := handler.NewHandler(r)
 
-	app, err := validation.NewFirebaseApp()
+	firebaseApp, err := validation.NewFirebaseApp()
 	if err != nil {
 		return
 	}
 
-	h.SetupRoutes(app)
+	h.SetupRoutes(firebaseApp)
 
 	h.Router.Run(":8080")
 }
