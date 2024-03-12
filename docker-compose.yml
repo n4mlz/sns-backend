@@ -1,0 +1,12 @@
+services:
+  db:
+    image: mariadb:latest
+    container_name: db
+    tty: true
+    ports:
+      - 3306:3306
+    environment:
+      MARIADB_ROOT_PASSWORD: password
+      TZ: "Asia/Tokyo"
+    volumes:
+      - ./sql_init:/docker-entrypoint-initdb.d
