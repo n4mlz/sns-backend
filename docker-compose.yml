@@ -1,4 +1,12 @@
 services:
+  backend:
+    image: golang:latest
+    container_name: backend
+    tty: true
+    ports:
+      - 8080:8080
+    volumes:
+      - ./:/go/app
   db:
     image: mariadb:latest
     container_name: db
