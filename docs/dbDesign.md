@@ -26,6 +26,32 @@
 - created_at
     - timestamp
 
+## comments
+- id
+    - PK, SK
+- post_id
+    - FK
+- user_id
+    - FK
+- content
+    - text
+- created_at
+    - timestamp
+
+## replies
+- id
+    - PK, SK
+- comment_id
+    - FK
+- sequence
+    - int
+- user_id
+    - FK
+- content
+    - text
+- created_at
+    - timestamp
+
 ## likes
 - id
     - PK, SK
