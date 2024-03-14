@@ -1,6 +1,6 @@
 -- MariaDB dump 10.19-11.3.2-MariaDB, for debian-linux-gnu (x86_64)
 --
--- Host: localhost    Database: sns
+-- Host: 127.0.0.1    Database: sns
 -- ------------------------------------------------------
 -- Server version	11.3.2-MariaDB-1:11.3.2+maria~ubu2204
 
@@ -18,6 +18,27 @@
 CREATE DATABASE IF NOT EXISTS `sns`;
 
 USE `sns`;
+
+--
+-- Table structure for table `comments`
+--
+
+DROP TABLE IF EXISTS `comments`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `comments` (
+  `id` varchar(100) NOT NULL,
+  `post_id` varchar(100) NOT NULL,
+  `user_id` varchar(100) NOT NULL,
+  `content` text NOT NULL,
+  `created_at` timestamp NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `comments_posts_FK` (`post_id`),
+  KEY `comments_users_FK` (`user_id`),
+  CONSTRAINT `comments_posts_FK` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`),
+  CONSTRAINT `comments_users_FK` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `follows`
@@ -76,6 +97,27 @@ CREATE TABLE `posts` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `replies`
+--
+
+DROP TABLE IF EXISTS `replies`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `replies` (
+  `id` varchar(100) NOT NULL,
+  `comment_id` varchar(100) NOT NULL,
+  `sequence` int(11) NOT NULL,
+  `user_id` varchar(100) NOT NULL,
+  `content` text NOT NULL,
+  `created_at` timestamp NOT NULL,
+  KEY `replies_comments_FK` (`comment_id`),
+  KEY `replies_users_FK` (`user_id`),
+  CONSTRAINT `replies_comments_FK` FOREIGN KEY (`comment_id`) REFERENCES `comments` (`id`),
+  CONSTRAINT `replies_users_FK` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `users`
 --
 
@@ -104,4 +146,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-03-12  9:50:43
+-- Dump completed on 2024-03-14 14:32:14
