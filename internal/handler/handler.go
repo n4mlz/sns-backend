@@ -2,7 +2,7 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/n4mlz/sns-backend/validation"
+	"github.com/n4mlz/sns-backend/internal/validation"
 )
 
 type Handler struct {

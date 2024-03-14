@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/n4mlz/sns-backend/validation"
+	"github.com/n4mlz/sns-backend/internal/validation"
 )
 
 func authMiddleware(firebaseApp validation.FirebaseApp) gin.HandlerFunc {

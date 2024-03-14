@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/n4mlz/sns-backend/handler"
-	"github.com/n4mlz/sns-backend/validation"
+	"github.com/n4mlz/sns-backend/internal/handler"
+	"github.com/n4mlz/sns-backend/internal/validation"
 )
 
 func main() {
