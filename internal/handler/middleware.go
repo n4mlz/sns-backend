@@ -8,12 +8,12 @@ import (
 	"github.com/n4mlz/sns-backend/internal/validation"
 )
 
-func authMiddleware(firebaseApp validation.FirebaseApp) gin.HandlerFunc {
+func authMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		authHeader := ctx.GetHeader("Authorization")
 		idToken := strings.Replace(authHeader, "Bearer ", "", 1)
 
-		token, err := firebaseApp.VerifyIDToken(ctx, idToken)
+		token, err := validation.VerifyIDToken(ctx, idToken)
 		if err != nil {
 			ctx.JSON(http.StatusUnauthorized, err)
 			ctx.Abort()
