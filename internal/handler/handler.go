@@ -15,11 +15,8 @@ func NewHandler(router *gin.Engine) *Handler {
 }
 
 func (h *Handler) SetupRoutes() {
-	firebase := h.Router.Group("/firebase")
-	firebase.Use(authMiddleware())
+	api := h.Router.Group("/api")
 	{
-		firebase.GET("", func(ctx *gin.Context) {
-			// some action
-		})
+		setSettingsRoutesFrom(api)
 	}
 }
