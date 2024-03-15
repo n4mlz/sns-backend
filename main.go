@@ -17,6 +17,8 @@ func main() {
 		return
 	}
 
+	// db, err := repository.NewRepository()
+
 	h.SetupRoutes(firebaseApp)
 
 	h.Router.Run(":8080")
