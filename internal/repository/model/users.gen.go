@@ -16,8 +16,8 @@ type User struct {
 	UserName    string    `gorm:"column:user_name;type:varchar(100);not null;uniqueIndex:users_unique,priority:1" json:"user_name"`
 	DisplayName string    `gorm:"column:display_name;type:varchar(100);not null" json:"display_name"`
 	Biography   *string   `gorm:"column:biography;type:text" json:"biography"`
-	IconURL     *string   `gorm:"column:icon_url;type:varchar(100)" json:"icon_url"`
-	BgImageURL  *string   `gorm:"column:bg_image_url;type:varchar(100)" json:"bg_image_url"`
+	IconPath    *string   `gorm:"column:icon_path;type:varchar(100)" json:"icon_path"`
+	BgImagePath *string   `gorm:"column:bg_image_path;type:varchar(100)" json:"bg_image_path"`
 	CreatedAt   time.Time `gorm:"column:created_at;type:timestamp;not null" json:"created_at"`
 }
 
