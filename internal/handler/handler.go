@@ -2,7 +2,6 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/n4mlz/sns-backend/internal/validation"
 )
 
 type Handler struct {
@@ -15,12 +14,9 @@ func NewHandler(router *gin.Engine) *Handler {
 	}
 }
 
-func (h *Handler) SetupRoutes(firebaseApp *validation.FirebaseApp) {
-	firebase := h.Router.Group("/firebase")
-	firebase.Use(authMiddleware(*firebaseApp))
+func (h *Handler) SetupRoutes() {
+	api := h.Router.Group("/api")
 	{
-		firebase.GET("", func(ctx *gin.Context) {
-			// some action
-		})
+		setSettingsRoutesFrom(api)
 	}
 }

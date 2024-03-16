@@ -12,10 +12,10 @@ const TableNamePost = "posts"
 
 // Post mapped from table <posts>
 type Post struct {
-	ID        string     `gorm:"column:id;type:varchar(100);primaryKey" json:"id"`
-	UserID    string     `gorm:"column:user_id;type:varchar(100);not null;index:posts_users_FK,priority:1" json:"user_id"`
-	Content   string     `gorm:"column:content;type:text;not null" json:"content"`
-	CreatedAt *time.Time `gorm:"column:created_at;type:timestamp" json:"created_at"`
+	ID        string    `gorm:"column:id;type:varchar(100);primaryKey" json:"id"`
+	UserID    string    `gorm:"column:user_id;type:varchar(100);not null;index:posts_users_FK,priority:1" json:"user_id"`
+	Content   string    `gorm:"column:content;type:text;not null" json:"content"`
+	CreatedAt time.Time `gorm:"column:created_at;type:timestamp;not null" json:"created_at"`
 }
 
 // TableName Post's table name

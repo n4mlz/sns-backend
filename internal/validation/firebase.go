@@ -9,24 +9,24 @@ import (
 	"google.golang.org/api/option"
 )
 
-type FirebaseApp struct {
-	*firebase.App
-}
+var FirebaseApp = new(firebase.App)
 
 // initialize app with ServiceAccountKey.json
-func NewFirebaseApp() (*FirebaseApp, error) {
+func InitFirebaseApp() error {
 	opt := option.WithCredentialsFile("serviceAccountKey.json")
 	app, err := firebase.NewApp(context.Background(), nil, opt)
+	FirebaseApp = app
+
 	if err != nil {
 		log.Printf("error initializing app: %v\n", err)
-		return nil, err
+		return err
 	}
 
-	return &FirebaseApp{app}, nil
+	return nil
 }
 
-func (app *FirebaseApp) VerifyIDToken(ctx context.Context, idToken string) (*auth.Token, error) {
-	client, err := app.Auth(ctx)
+func VerifyIDToken(ctx context.Context, idToken string) (*auth.Token, error) {
+	client, err := FirebaseApp.Auth(ctx)
 	if err != nil {
 		log.Printf("error getting Auth client: %v\n", err)
 		return nil, err
