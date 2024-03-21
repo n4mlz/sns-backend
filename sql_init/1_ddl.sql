@@ -1,6 +1,6 @@
 -- MariaDB dump 10.19-11.3.2-MariaDB, for debian-linux-gnu (x86_64)
 --
--- Host: 127.0.0.1    Database: sns
+-- Host: localhost    Database: sns
 -- ------------------------------------------------------
 -- Server version	11.3.2-MariaDB-1:11.3.2+maria~ubu2204
 
@@ -49,8 +49,8 @@ DROP TABLE IF EXISTS `follows`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `follows` (
   `id` varchar(100) NOT NULL,
-  `following_user_id` varchar(100) NOT NULL,
   `follower_user_id` varchar(100) NOT NULL,
+  `following_user_id` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `follows_users_FK` (`following_user_id`),
   KEY `follows_users_FK_1` (`follower_user_id`),
@@ -110,6 +110,7 @@ CREATE TABLE `replies` (
   `user_id` varchar(100) NOT NULL,
   `content` text NOT NULL,
   `created_at` timestamp NOT NULL,
+  PRIMARY KEY (`id`),
   KEY `replies_comments_FK` (`comment_id`),
   KEY `replies_users_FK` (`user_id`),
   CONSTRAINT `replies_comments_FK` FOREIGN KEY (`comment_id`) REFERENCES `comments` (`id`),
@@ -129,8 +130,6 @@ CREATE TABLE `users` (
   `user_name` varchar(100) NOT NULL,
   `display_name` varchar(100) NOT NULL,
   `biography` text DEFAULT NULL,
-  `icon_path` varchar(100) DEFAULT NULL,
-  `bg_image_path` varchar(100) DEFAULT NULL,
   `created_at` timestamp NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `users_unique` (`user_name`)
@@ -146,4 +145,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-03-15 19:24:57
+-- Dump completed on 2024-03-22  4:47:27

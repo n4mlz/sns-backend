@@ -28,8 +28,8 @@ func newFollow(db *gorm.DB, opts ...gen.DOOption) follow {
 	tableName := _follow.followDo.TableName()
 	_follow.ALL = field.NewAsterisk(tableName)
 	_follow.ID = field.NewString(tableName, "id")
-	_follow.FollowingUserID = field.NewString(tableName, "following_user_id")
 	_follow.FollowerUserID = field.NewString(tableName, "follower_user_id")
+	_follow.FollowingUserID = field.NewString(tableName, "following_user_id")
 
 	_follow.fillFieldMap()
 
@@ -41,8 +41,8 @@ type follow struct {
 
 	ALL             field.Asterisk
 	ID              field.String
-	FollowingUserID field.String
 	FollowerUserID  field.String
+	FollowingUserID field.String
 
 	fieldMap map[string]field.Expr
 }
@@ -60,8 +60,8 @@ func (f follow) As(alias string) *follow {
 func (f *follow) updateTableName(table string) *follow {
 	f.ALL = field.NewAsterisk(table)
 	f.ID = field.NewString(table, "id")
-	f.FollowingUserID = field.NewString(table, "following_user_id")
 	f.FollowerUserID = field.NewString(table, "follower_user_id")
+	f.FollowingUserID = field.NewString(table, "following_user_id")
 
 	f.fillFieldMap()
 
@@ -80,8 +80,8 @@ func (f *follow) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 func (f *follow) fillFieldMap() {
 	f.fieldMap = make(map[string]field.Expr, 3)
 	f.fieldMap["id"] = f.ID
-	f.fieldMap["following_user_id"] = f.FollowingUserID
 	f.fieldMap["follower_user_id"] = f.FollowerUserID
+	f.fieldMap["following_user_id"] = f.FollowingUserID
 }
 
 func (f follow) clone(db *gorm.DB) follow {
