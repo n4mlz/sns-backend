@@ -18,5 +18,6 @@ func (h *Handler) SetupRoutes() {
 	api := h.Router.Group("/api")
 	{
 		setSettingsRoutesFrom(api)
+		setUsersRoutesFrom(api)
 	}
 }
