@@ -9,8 +9,8 @@ const TableNameFollow = "follows"
 // Follow mapped from table <follows>
 type Follow struct {
 	ID              string `gorm:"column:id;type:varchar(100);primaryKey" json:"id"`
-	FollowingUserID string `gorm:"column:following_user_id;type:varchar(100);not null;index:follows_users_FK,priority:1" json:"following_user_id"`
 	FollowerUserID  string `gorm:"column:follower_user_id;type:varchar(100);not null;index:follows_users_FK_1,priority:1" json:"follower_user_id"`
+	FollowingUserID string `gorm:"column:following_user_id;type:varchar(100);not null;index:follows_users_FK,priority:1" json:"following_user_id"`
 }
 
 // TableName Follow's table name

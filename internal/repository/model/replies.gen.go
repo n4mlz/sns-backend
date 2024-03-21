@@ -12,7 +12,7 @@ const TableNameReply = "replies"
 
 // Reply mapped from table <replies>
 type Reply struct {
-	ID        string    `gorm:"column:id;type:varchar(100);not null" json:"id"`
+	ID        string    `gorm:"column:id;type:varchar(100);primaryKey" json:"id"`
 	CommentID string    `gorm:"column:comment_id;type:varchar(100);not null;index:replies_comments_FK,priority:1" json:"comment_id"`
 	Sequence  int32     `gorm:"column:sequence;type:int(11);not null" json:"sequence"`
 	UserID    string    `gorm:"column:user_id;type:varchar(100);not null;index:replies_users_FK,priority:1" json:"user_id"`

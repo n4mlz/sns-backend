@@ -9,10 +9,6 @@
 - biography
     - text
     - null ok
-- icon_url
-    - null ok
-- bg_image_url
-    - null ok
 - created_at
     - timestamp
 
@@ -63,7 +59,7 @@
 ## follows
 - id
     - PK, SK
-- following_user_id
-    - FK
 - follower_user_id
+    - FK
+- following_user_id
     - FK
