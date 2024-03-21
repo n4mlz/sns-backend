@@ -9,6 +9,6 @@ func setSettingsRoutesFrom(r *gin.RouterGroup) {
 	settings := r.Group("/settings")
 	settings.Use(authMiddleware())
 	{
-		settings.PUT("", models.SaveUser)
+		settings.PUT("", models.SaveProfile)
 	}
 }

@@ -15,8 +15,7 @@ func authMiddleware() gin.HandlerFunc {
 
 		token, err := validation.VerifyIDToken(ctx, idToken)
 		if err != nil {
-			ctx.JSON(http.StatusUnauthorized, err)
-			ctx.Abort()
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, err)
 			return
 		}
 
