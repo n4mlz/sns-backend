@@ -71,6 +71,34 @@ func UnfollowUser(ctx *gin.Context) {
 	})
 }
 
+func RejectUser(ctx *gin.Context) {
+	var request UserNameSchema
+	err := ctx.ShouldBindJSON(&request)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if !isExistUser(request.UserName) {
+		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		return
+	}
+
+	followerUserId := userNameToUserId(request.UserName)
+	followingUserId := ctx.GetString("userId")
+
+	if !isFollowing(followerUserId, followingUserId) {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "not following"})
+		return
+	}
+
+	query.Follow.WithContext(context.Background()).Where(query.Follow.FollowerUserID.Eq(followerUserId)).Where(query.Follow.FollowingUserID.Eq(followingUserId)).Delete()
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"rejectedUserName": request.UserName,
+	})
+}
+
 func Followed(ctx *gin.Context) {
 	userId := ctx.GetString("userId")
 

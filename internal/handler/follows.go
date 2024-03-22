@@ -6,11 +6,12 @@ import (
 )
 
 func setFollowsRoutesFrom(r *gin.RouterGroup) {
-	users := r.Group("/follows")
-	users.Use(authMiddleware())
+	follows := r.Group("/follows")
+	follows.Use(authMiddleware())
 	{
-		users.PUT("/follow", models.FollowUser)
-		users.PUT("/unfollow", models.UnfollowUser)
-		users.GET("/followed", models.Followed)
+		follows.PUT("/follow", models.FollowUser)
+		follows.PUT("/unfollow", models.UnfollowUser)
+		follows.GET("/followed", models.Followed)
+		follows.PUT("/reject", models.RejectUser)
 	}
 }
