@@ -22,16 +22,27 @@ func SaveProfile(ctx *gin.Context) {
 		return
 	}
 
+	userId := ctx.GetString("userId")
+
 	newUser := &model.User{
-		ID:          ctx.GetString("userId"),
+		ID:          userId,
 		UserName:    request.UserName,
 		DisplayName: request.DisplayName,
-		Biography:   &request.Biography}
+		Biography:   request.Biography}
 
 	query.User.WithContext(context.Background()).Save(newUser)
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"userName":    newUser.UserName,
-		"displayName": newUser.DisplayName,
-		"biography":   newUser.Biography})
+	newFollow := &model.Follow{
+		ID:              userId,
+		FollowerUserID:  userId,
+		FollowingUserID: userId}
+
+	query.Follow.WithContext(context.Background()).Save(newFollow)
+
+	response := ProfileSchema{
+		UserName:    newUser.UserName,
+		DisplayName: newUser.DisplayName,
+		Biography:   newUser.Biography}
+
+	ctx.JSON(http.StatusOK, response)
 }

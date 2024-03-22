@@ -129,7 +129,7 @@ CREATE TABLE `users` (
   `id` varchar(100) NOT NULL,
   `user_name` varchar(100) NOT NULL,
   `display_name` varchar(100) NOT NULL,
-  `biography` text DEFAULT NULL,
+  `biography` text NOT NULL,
   `created_at` timestamp NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `users_unique` (`user_name`)
@@ -145,4 +145,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-03-22  4:47:27
+-- Dump completed on 2024-03-22 15:51:28

@@ -9,13 +9,10 @@ func setUsersRoutesFrom(r *gin.RouterGroup) {
 	users := r.Group("/users")
 	users.Use(authMiddleware())
 	{
-		users.PUT("/follow", models.FollowUser)
-		users.PUT("/unfollow", models.UnfollowUser)
-
 		user := users.Group("/:userName")
 		{
-			user.GET("", models.GetUser)
-			user.GET("/mutuals", models.GetMutualFollow)
+			user.GET("", models.User)
+			user.GET("/mutuals", models.MutualFollow)
 		}
 	}
 }
