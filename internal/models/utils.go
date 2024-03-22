@@ -3,6 +3,7 @@ package models
 import (
 	"context"
 	"fmt"
+	"log"
 	"regexp"
 
 	"github.com/n4mlz/sns-backend/internal/repository/query"
@@ -12,6 +13,12 @@ var (
 	MIN_USERNAME_LENGTH = 4
 	MAX_USERNAME_LENGTH = 16
 )
+
+var MUTUAL = "mutual"
+var FOLLOWING = "following"
+var FOLLOWED = "followed"
+var NONE = "none"
+var OWN = "own"
 
 func isValidUserName(s string) bool {
 	pattern := regexp.MustCompile(fmt.Sprintf(`^[A-Za-z0-9_]{%d,%d}$`, MIN_USERNAME_LENGTH, MAX_USERNAME_LENGTH))
@@ -47,35 +54,89 @@ func isMutualFollow(userId1 string, userId2 string) bool {
 }
 
 func getFollowerUserIdList(userId string) ([]string, error) {
-	follower, err := query.Follow.WithContext(context.Background()).Where(query.Follow.FollowingUserID.Eq(userId)).Find()
+	followers, err := query.Follow.WithContext(context.Background()).Where(query.Follow.FollowingUserID.Eq(userId)).Find()
 	if err != nil {
 		return nil, err
 	}
 
 	var followerUserIdList []string
-	for _, follow := range follower {
-		followerUserIdList = append(followerUserIdList, follow.FollowerUserID)
+	for _, follower := range followers {
+		followerUserIdList = append(followerUserIdList, follower.FollowerUserID)
 	}
 
 	return followerUserIdList, nil
 }
 
-func getMutualFollowUserIdList(userId string) ([]string, error) {
-	followerUserIdList, err := getFollowerUserIdList(userId)
-
+func getFollowingUserIdList(userId string) ([]string, error) {
+	followings, err := query.Follow.WithContext(context.Background()).Where(query.Follow.FollowerUserID.Eq(userId)).Find()
 	if err != nil {
 		return nil, err
 	}
 
-	mutualFollowing, err := query.Follow.WithContext(context.Background()).Where(query.Follow.FollowerUserID.Eq(userId)).Where(query.Follow.FollowingUserID.In(followerUserIdList...)).Find()
+	var followingUserIdList []string
+	for _, following := range followings {
+		followingUserIdList = append(followingUserIdList, following.FollowingUserID)
+	}
+
+	return followingUserIdList, nil
+}
+
+func getMutualFollowUserIdList(userId string) ([]string, error) {
+	followerUserIdList, err := getFollowerUserIdList(userId)
+	if err != nil {
+		return nil, err
+	}
+
+	mutualFollowings, err := query.Follow.WithContext(context.Background()).Where(query.Follow.FollowerUserID.Eq(userId)).Where(query.Follow.FollowingUserID.In(followerUserIdList...)).Find()
 	if err != nil {
 		return nil, err
 	}
 
 	var mutualFollowingUserIdList []string
-	for _, follow := range mutualFollowing {
+	for _, follow := range mutualFollowings {
 		mutualFollowingUserIdList = append(mutualFollowingUserIdList, follow.FollowingUserID)
 	}
 
 	return mutualFollowingUserIdList, nil
+}
+
+func getFollowRequestUserIdList(userId string) ([]string, error) {
+	followingUserIdList, err := getFollowingUserIdList(userId)
+	if err != nil {
+		return nil, err
+	}
+
+	followRequests, err := query.Follow.WithContext(context.Background()).Where(query.Follow.FollowingUserID.Eq(userId)).Where(query.Follow.FollowerUserID.NotIn(followingUserIdList...)).Find()
+	if err != nil {
+		return nil, err
+	}
+
+	var followRequestUserIdList []string
+	for _, follow := range followRequests {
+		followRequestUserIdList = append(followRequestUserIdList, follow.FollowerUserID)
+	}
+
+	log.Print(followingUserIdList)
+	log.Print(followRequestUserIdList)
+
+	return followRequestUserIdList, nil
+}
+
+func getFollowingStatus(fromUserId string, toUserId string) string {
+	if fromUserId == toUserId {
+		return OWN
+	}
+
+	following := isFollowing(fromUserId, toUserId)
+	followed := isFollowing(toUserId, fromUserId)
+
+	if following && followed {
+		return MUTUAL
+	} else if following {
+		return FOLLOWING
+	} else if followed {
+		return FOLLOWED
+	} else {
+		return NONE
+	}
 }
