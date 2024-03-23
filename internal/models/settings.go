@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/n4mlz/sns-backend/internal/repository/model"
 	"github.com/n4mlz/sns-backend/internal/repository/query"
+	"github.com/rs/xid"
 )
 
 func SaveProfile(ctx *gin.Context) {
@@ -33,7 +34,7 @@ func SaveProfile(ctx *gin.Context) {
 	query.User.WithContext(context.Background()).Save(newUser)
 
 	newFollow := &model.Follow{
-		ID:              userId,
+		ID:              xid.New().String(),
 		FollowerUserID:  userId,
 		FollowingUserID: userId}
 

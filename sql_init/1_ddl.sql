@@ -106,7 +106,6 @@ DROP TABLE IF EXISTS `replies`;
 CREATE TABLE `replies` (
   `id` varchar(100) NOT NULL,
   `comment_id` varchar(100) NOT NULL,
-  `sequence` int(11) NOT NULL,
   `user_id` varchar(100) NOT NULL,
   `content` text NOT NULL,
   `created_at` timestamp NOT NULL,
