@@ -1,11 +1,11 @@
-package handler
+package interfaces
 
 import (
 	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/n4mlz/sns-backend/internal/validation"
+	"github.com/n4mlz/sns-backend/internal/infrastructure/validation"
 )
 
 func authMiddleware() gin.HandlerFunc {

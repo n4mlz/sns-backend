@@ -2,17 +2,18 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/n4mlz/sns-backend/internal/handler"
-	"github.com/n4mlz/sns-backend/internal/repository"
-	"github.com/n4mlz/sns-backend/internal/repository/query"
-	"github.com/n4mlz/sns-backend/internal/validation"
+	"github.com/n4mlz/sns-backend/internal/domain/userDomain"
+	"github.com/n4mlz/sns-backend/internal/infrastructure/repository"
+	"github.com/n4mlz/sns-backend/internal/infrastructure/repository/query"
+	"github.com/n4mlz/sns-backend/internal/infrastructure/validation"
+	"github.com/n4mlz/sns-backend/internal/interfaces"
 )
 
 func main() {
 	r := gin.Default()
 	r.ContextWithFallback = true
 
-	h := handler.NewHandler(r)
+	h := interfaces.NewHandler(r)
 
 	err := validation.InitFirebaseApp()
 	if err != nil {
@@ -25,6 +26,14 @@ func main() {
 	}
 
 	query.SetDefault(db)
+
+	userFactory := userDomain.NewUserFactory(&repository.UserRepository{})
+
+	userDomain.SetDefaultUserFactory(userFactory)
+
+	userService := userDomain.NewUserService(&repository.UserRepository{})
+
+	userDomain.SetDefaultUserService(userService)
 
 	h.SetupRoutes()
 

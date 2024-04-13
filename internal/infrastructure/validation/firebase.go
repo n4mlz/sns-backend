@@ -9,7 +9,7 @@ import (
 	"google.golang.org/api/option"
 )
 
-var FirebaseApp = new(firebase.App)
+var FirebaseApp *firebase.App
 
 // initialize app with ServiceAccountKey.json
 func InitFirebaseApp() error {
