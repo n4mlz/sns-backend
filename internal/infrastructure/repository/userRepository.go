@@ -17,7 +17,7 @@ func toGormUser(user *userDomain.User) *model.User {
 		ID:          user.UserId.String(),
 		UserName:    user.UserName.String(),
 		DisplayName: user.DisplayName.String(),
-		Biography:   user.Biography,
+		Biography:   user.Biography.String(),
 		CreatedAt:   user.CreatedAt,
 	}
 }
@@ -27,7 +27,7 @@ func toUser(gormUser *model.User) *userDomain.User {
 		UserId:      userDomain.UserId(gormUser.ID),
 		UserName:    userDomain.UserName(gormUser.UserName),
 		DisplayName: userDomain.DisplayName(gormUser.DisplayName),
-		Biography:   gormUser.Biography,
+		Biography:   userDomain.Biography(gormUser.Biography),
 		CreatedAt:   gormUser.CreatedAt,
 	}
 }

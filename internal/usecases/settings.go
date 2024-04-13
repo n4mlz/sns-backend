@@ -16,28 +16,28 @@ func SaveProfile(ctx *gin.Context) {
 		return
 	}
 
+	userId := userDomain.UserId(ctx.GetString("userId"))
 	userName := userDomain.UserName(request.UserName)
 	displayName := userDomain.DisplayName(request.DisplayName)
+	biography := userDomain.Biography(request.Biography)
 
-	if !userName.IsValid() || !displayName.IsValid() {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
-		return
-	}
-
-	userId := userDomain.UserId(ctx.GetString("userId"))
-
-	user, err := userDomain.Factory.NewUser(userId, userName, displayName, request.Biography)
+	user, err := userDomain.Factory.NewUser(userId, userName, displayName, biography)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	user.SaveUser()
+	err = user.SaveUser()
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
 	response := ProfileDto{
 		UserName:    user.UserName.String(),
 		DisplayName: user.DisplayName.String(),
-		Biography:   user.Biography}
+		Biography:   user.Biography.String(),
+	}
 
 	ctx.JSON(http.StatusOK, response)
 }

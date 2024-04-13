@@ -10,13 +10,13 @@ type User struct {
 	UserId         UserId
 	UserName       UserName
 	DisplayName    DisplayName
-	Biography      string
+	Biography      Biography
 	CreatedAt      time.Time
 }
 
 func (u *User) SaveUser() error {
-	if !u.UserName.IsValid() || !u.DisplayName.IsValid() {
-		return errors.New("invalid user name or display name")
+	if !u.UserName.IsValid() || !u.DisplayName.IsValid() || !u.Biography.IsValid() {
+		return errors.New("invalid profile")
 	}
 	u.UserRepository.Save(u)
 	return nil

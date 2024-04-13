@@ -10,6 +10,8 @@ const (
 	MAX_USERNAME_LENGTH = 16
 )
 
+const MAX_BIOGRAPHY_LENGTH = 256
+
 const (
 	MUTUAL    = "mutual"
 	FOLLOWING = "following"
@@ -43,4 +45,14 @@ func (d DisplayName) String() string {
 
 func (d DisplayName) IsValid() bool {
 	return len(d) != 0
+}
+
+type Biography string
+
+func (b Biography) String() string {
+	return string(b)
+}
+
+func (b Biography) IsValid() bool {
+	return len(b) <= MAX_BIOGRAPHY_LENGTH
 }

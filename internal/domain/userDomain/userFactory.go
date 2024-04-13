@@ -18,9 +18,9 @@ func SetDefaultUserFactory(userFactory *UserFactory) {
 	Factory = userFactory
 }
 
-func (uf *UserFactory) NewUser(userId UserId, userName UserName, displayName DisplayName, biography string) (*User, error) {
-	if !userName.IsValid() || !displayName.IsValid() {
-		return nil, errors.New("invalid user name or display name")
+func (uf *UserFactory) NewUser(userId UserId, userName UserName, displayName DisplayName, biography Biography) (*User, error) {
+	if !userName.IsValid() || !displayName.IsValid() || !biography.IsValid() {
+		return nil, errors.New("invalid profile")
 	}
 
 	return &User{

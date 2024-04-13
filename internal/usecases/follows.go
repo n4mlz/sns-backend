@@ -151,7 +151,7 @@ func RequestedUsers(ctx *gin.Context) {
 		response = append(response, UserDto{
 			UserName:        followRequestUser.UserName.String(),
 			DisplayName:     followRequestUser.DisplayName.String(),
-			Biography:       followRequestUser.Biography,
+			Biography:       followRequestUser.Biography.String(),
 			CreatedAt:       followRequestUser.CreatedAt,
 			FollowingStatus: userDomain.FOLLOWED,
 		})

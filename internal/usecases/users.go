@@ -25,7 +25,7 @@ func User(ctx *gin.Context) {
 	response := UserDto{
 		UserName:        targetUser.UserName.String(),
 		DisplayName:     targetUser.DisplayName.String(),
-		Biography:       targetUser.Biography,
+		Biography:       targetUser.Biography.String(),
 		CreatedAt:       targetUser.CreatedAt,
 		FollowingStatus: sourseUser.GetFollowingStatus(targetUser),
 	}
@@ -103,7 +103,7 @@ func MutualFollow(ctx *gin.Context) {
 		response = append(response, UserDto{
 			UserName:        user.UserName.String(),
 			DisplayName:     user.DisplayName.String(),
-			Biography:       user.Biography,
+			Biography:       user.Biography.String(),
 			CreatedAt:       user.CreatedAt,
 			FollowingStatus: followingStatus,
 		})
