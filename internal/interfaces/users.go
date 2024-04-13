@@ -1,8 +1,8 @@
-package handler
+package interfaces
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/n4mlz/sns-backend/internal/models"
+	"github.com/n4mlz/sns-backend/internal/usecases"
 )
 
 func setUsersRoutesFrom(r *gin.RouterGroup) {
@@ -11,8 +11,8 @@ func setUsersRoutesFrom(r *gin.RouterGroup) {
 	{
 		user := users.Group("/:userName")
 		{
-			user.GET("", models.User)
-			user.GET("/mutuals", models.MutualFollow)
+			user.GET("", usecases.User)
+			user.GET("/mutuals", usecases.MutualFollow)
 		}
 	}
 }

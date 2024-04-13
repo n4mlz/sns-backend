@@ -16,7 +16,7 @@ import (
 
 	"gorm.io/plugin/dbresolver"
 
-	"github.com/n4mlz/sns-backend/internal/repository/model"
+	"github.com/n4mlz/sns-backend/internal/infrastructure/repository/model"
 )
 
 func newReply(db *gorm.DB, opts ...gen.DOOption) reply {

@@ -1,14 +1,14 @@
-package models
+package usecases
 
 import "time"
 
-type ProfileSchema struct {
+type ProfileDto struct {
 	UserName    string `json:"userName"`
 	DisplayName string `json:"displayName"`
 	Biography   string `json:"biography"`
 }
 
-type UserDataSchema struct {
+type UserDto struct {
 	UserName        string    `json:"userName"`
 	DisplayName     string    `json:"displayName"`
 	Biography       string    `json:"biography"`
@@ -16,6 +16,6 @@ type UserDataSchema struct {
 	FollowingStatus string    `json:"followingStatus"`
 }
 
-type UserNameSchema struct {
+type UserNameDto struct {
 	UserName string `json:"userName"`
 }

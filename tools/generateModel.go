@@ -1,13 +1,13 @@
 package main
 
 import (
-	"github.com/n4mlz/sns-backend/internal/repository"
+	"github.com/n4mlz/sns-backend/internal/infrastructure/repository"
 	"gorm.io/gen"
 )
 
 func main() {
 	g := gen.NewGenerator(gen.Config{
-		OutPath:           "./internal/repository/query",
+		OutPath:           "./internal/infrastructure/repository/query",
 		Mode:              gen.WithoutContext | gen.WithDefaultQuery | gen.WithQueryInterface,
 		FieldWithIndexTag: true,
 		FieldWithTypeTag:  true,
