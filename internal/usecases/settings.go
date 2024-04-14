@@ -21,13 +21,7 @@ func SaveProfile(ctx *gin.Context) {
 	displayName := userDomain.DisplayName(request.DisplayName)
 	biography := userDomain.Biography(request.Biography)
 
-	user, err := userDomain.Factory.NewUser(userId, userName, displayName, biography)
-	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	err = user.SaveUser()
+	user, err := userDomain.Factory.SaveUserToRepository(userId, userName, displayName, biography)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

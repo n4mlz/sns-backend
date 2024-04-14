@@ -32,10 +32,13 @@ func toUser(gormUser *model.User) *userDomain.User {
 	}
 }
 
-func (r *UserRepository) Save(user *userDomain.User) {
+func (r *UserRepository) Save(user *userDomain.User) error {
 	gormUser := toGormUser(user)
 
-	query.User.WithContext(context.Background()).Save(gormUser)
+	err := query.User.WithContext(context.Background()).Save(gormUser)
+	if err != nil {
+		return err
+	}
 
 	if !user.IsFollowing(user) {
 		newFollow := &model.Follow{
@@ -44,8 +47,13 @@ func (r *UserRepository) Save(user *userDomain.User) {
 			FollowingUserID: gormUser.ID,
 		}
 
-		query.Follow.WithContext(context.Background()).Save(newFollow)
+		err := query.Follow.WithContext(context.Background()).Save(newFollow)
+		if err != nil {
+			return err
+		}
 	}
+
+	return nil
 }
 
 func (r *UserRepository) FindById(userId userDomain.UserId) (*userDomain.User, error) {

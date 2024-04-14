@@ -1,7 +1,7 @@
 package userDomain
 
 type IUserRepository interface {
-	Save(user *User)
+	Save(user *User) error
 	FindById(id UserId) (*User, error)
 	FindByIds(ids []UserId) ([]*User, error)
 	FindByUserName(userName UserName) (*User, error)

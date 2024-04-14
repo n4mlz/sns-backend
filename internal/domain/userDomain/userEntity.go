@@ -14,14 +14,6 @@ type User struct {
 	CreatedAt      time.Time
 }
 
-func (u *User) SaveUser() error {
-	if !u.UserName.IsValid() || !u.DisplayName.IsValid() || !u.Biography.IsValid() {
-		return errors.New("invalid profile")
-	}
-	u.UserRepository.Save(u)
-	return nil
-}
-
 func (u *User) Follow(user *User) error {
 	if u.IsFollowing(user) {
 		return errors.New("already following")
@@ -73,19 +65,19 @@ func (u *User) GetFollowingStatus(user *User) string {
 	}
 }
 
-func (u *User) FollowingUserList() ([]*User, error) {
+func (u *User) FollowingUsers() ([]*User, error) {
 	return u.UserRepository.FollowingUserList(u)
 }
 
-func (u *User) FollowerUserList() ([]*User, error) {
+func (u *User) FollowerUsers() ([]*User, error) {
 	return u.UserRepository.FollowerUserList(u)
 }
 
-func (u *User) MutualFollowUserList() ([]*User, error) {
+func (u *User) MutualFollowUsers() ([]*User, error) {
 	return u.UserRepository.MutualFollowUserList(u)
 }
 
 // following and not followed
-func (u *User) FollowRequestUserList() ([]*User, error) {
+func (u *User) FollowRequestUsers() ([]*User, error) {
 	return u.UserRepository.FollowRequestUserList(u)
 }

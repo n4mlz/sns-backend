@@ -139,7 +139,7 @@ func RequestedUsers(ctx *gin.Context) {
 		return
 	}
 
-	followRequestUsers, err := user.FollowRequestUserList()
+	followRequestUsers, err := user.FollowRequestUsers()
 
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
