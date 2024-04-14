@@ -34,26 +34,7 @@ func toUser(gormUser *model.User) *userDomain.User {
 
 func (r *UserRepository) Save(user *userDomain.User) error {
 	gormUser := toGormUser(user)
-
-	err := query.User.WithContext(context.Background()).Save(gormUser)
-	if err != nil {
-		return err
-	}
-
-	if !user.IsFollowing(user) {
-		newFollow := &model.Follow{
-			ID:              xid.New().String(),
-			FollowerUserID:  gormUser.ID,
-			FollowingUserID: gormUser.ID,
-		}
-
-		err := query.Follow.WithContext(context.Background()).Save(newFollow)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
+	return query.User.WithContext(context.Background()).Save(gormUser)
 }
 
 func (r *UserRepository) FindById(userId userDomain.UserId) (*userDomain.User, error) {

@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/n4mlz/sns-backend/internal/domain/postDomain"
 	"github.com/n4mlz/sns-backend/internal/domain/userDomain"
 	"github.com/n4mlz/sns-backend/internal/infrastructure/repository"
 	"github.com/n4mlz/sns-backend/internal/infrastructure/repository/query"
@@ -28,12 +29,13 @@ func main() {
 	query.SetDefault(db)
 
 	userFactory := userDomain.NewUserFactory(&repository.UserRepository{})
-
 	userDomain.SetDefaultUserFactory(userFactory)
 
 	userService := userDomain.NewUserService(&repository.UserRepository{})
-
 	userDomain.SetDefaultUserService(userService)
+
+	postFactory := postDomain.NewPostFactory(&repository.PostRepository{})
+	postDomain.SetDefaultPostFactory(postFactory)
 
 	h.SetupRoutes()
 

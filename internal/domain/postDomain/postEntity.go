@@ -15,7 +15,7 @@ type Post struct {
 	CreatedAt      time.Time
 }
 
-func (p *Post) Like(user userDomain.User) error {
+func (p *Post) Like(user *userDomain.User) error {
 	if p.IsLiked(user) {
 		return errors.New("already liked")
 	}
@@ -24,7 +24,7 @@ func (p *Post) Like(user userDomain.User) error {
 	return nil
 }
 
-func (p *Post) Unlike(user userDomain.User) error {
+func (p *Post) Unlike(user *userDomain.User) error {
 	if !p.IsLiked(user) {
 		return errors.New("not liked")
 	}
@@ -33,14 +33,14 @@ func (p *Post) Unlike(user userDomain.User) error {
 	return nil
 }
 
-func (p *Post) IsLiked(user userDomain.User) bool {
+func (p *Post) IsLiked(user *userDomain.User) bool {
 	return p.PostRepository.IsLiked(p, user)
 }
 
-func (p *Post) GetLikeCount() int {
+func (p *Post) GetLikeCount() (int, error) {
 	return p.PostRepository.GetLikeCount(p)
 }
 
-func (p *Post) GetLikers() ([]userDomain.User, error) {
+func (p *Post) GetLikers() ([]*userDomain.User, error) {
 	return p.PostRepository.GetLikers(p)
 }

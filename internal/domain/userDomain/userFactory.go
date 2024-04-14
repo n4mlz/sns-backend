@@ -36,6 +36,13 @@ func (uf *UserFactory) SaveUserToRepository(userId UserId, userName UserName, di
 		return nil, err
 	}
 
+	if !user.IsFollowing(user) {
+		err = user.Follow(user)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return user, nil
 }
 
@@ -53,6 +60,27 @@ func (uf *UserFactory) GetUser(userId UserId) (*User, error) {
 		Biography:      user.Biography,
 		CreatedAt:      user.CreatedAt,
 	}, nil
+}
+
+func (uf *UserFactory) GetUsers(userIds []UserId) ([]*User, error) {
+	users, err := uf.userRepository.FindByIds(userIds)
+	if err != nil {
+		return nil, err
+	}
+
+	var result []*User
+	for _, user := range users {
+		result = append(result, &User{
+			UserRepository: uf.userRepository,
+			UserId:         user.UserId,
+			UserName:       user.UserName,
+			DisplayName:    user.DisplayName,
+			Biography:      user.Biography,
+			CreatedAt:      user.CreatedAt,
+		})
+	}
+
+	return result, nil
 }
 
 func (uf *UserFactory) GetUserByUserName(userName UserName) (*User, error) {
