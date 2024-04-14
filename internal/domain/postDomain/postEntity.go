@@ -10,7 +10,7 @@ import (
 type Post struct {
 	PostRepository IPostRepository
 	PostId         PostId
-	Poster         userDomain.User
+	Poster         *userDomain.User
 	Content        Content
 	CreatedAt      time.Time
 }

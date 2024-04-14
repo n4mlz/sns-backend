@@ -2,6 +2,15 @@ package usecases
 
 import "time"
 
+type UserNameDto struct {
+	UserName string `json:"userName"`
+}
+
+type UserDisplayDto struct {
+	UserName    string `json:"userName"`
+	DisplayName string `json:"displayName"`
+}
+
 type ProfileDto struct {
 	UserName    string `json:"userName"`
 	DisplayName string `json:"displayName"`
@@ -16,6 +25,16 @@ type UserDto struct {
 	FollowingStatus string    `json:"followingStatus"`
 }
 
-type UserNameDto struct {
-	UserName string `json:"userName"`
+type PostContentDto struct {
+	Content string `json:"content"`
+}
+
+type PostDto struct {
+	PostId    string         `json:"postId"`
+	Poster    UserDisplayDto `json:"poster"`
+	Content   string         `json:"content"`
+	Likes     int            `json:"likes"`
+	Liked     bool           `json:"liked"`
+	Comments  int            `json:"comments"`
+	CreatedAt time.Time      `json:"createdAt"`
 }

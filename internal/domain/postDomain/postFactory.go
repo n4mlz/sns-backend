@@ -22,7 +22,7 @@ func SetDefaultPostFactory(postFactory *PostFactory) {
 	Factory = postFactory
 }
 
-func (pf *PostFactory) CreatePostToRepository(poster userDomain.User, content Content) (*Post, error) {
+func (pf *PostFactory) CreatePostToRepository(poster *userDomain.User, content Content) (*Post, error) {
 	if !content.IsValid() {
 		return nil, errors.New("invalid content")
 	}

@@ -27,7 +27,7 @@ func toPost(gormPost *model.Post) *postDomain.Post {
 
 	return &postDomain.Post{
 		PostId:    postDomain.PostId(gormPost.ID),
-		Poster:    *poster,
+		Poster:    poster,
 		Content:   postDomain.Content(gormPost.Content),
 		CreatedAt: gormPost.CreatedAt,
 	}
