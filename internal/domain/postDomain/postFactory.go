@@ -9,12 +9,12 @@ import (
 var Factory *PostFactory
 
 type PostFactory struct {
-	postRepository IPostRepository
+	postRepository *IPostRepository
 }
 
 func NewPostFactory(postRepository IPostRepository) *PostFactory {
 	return &PostFactory{
-		postRepository: postRepository,
+		postRepository: &postRepository,
 	}
 }
 
@@ -33,7 +33,7 @@ func (pf *PostFactory) CreatePostToRepository(poster *userDomain.User, content C
 		Content:        content,
 	}
 
-	err := pf.postRepository.Create(post)
+	err := (*pf.postRepository).Create(post)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +42,7 @@ func (pf *PostFactory) CreatePostToRepository(poster *userDomain.User, content C
 }
 
 func (pf *PostFactory) GetPost(postId PostId) (*Post, error) {
-	post, err := pf.postRepository.FindById(postId)
+	post, err := (*pf.postRepository).FindById(postId)
 	if err != nil {
 		return nil, err
 	}
@@ -60,5 +60,5 @@ func (pf *PostFactory) DeletePostFromRepository(sourceUser *userDomain.User, pos
 	if sourceUser.UserId != post.Poster.UserId {
 		return errors.New("not permitted")
 	}
-	return pf.postRepository.Delete(post)
+	return (*pf.postRepository).Delete(post)
 }

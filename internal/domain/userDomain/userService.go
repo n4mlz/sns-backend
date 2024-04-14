@@ -3,11 +3,11 @@ package userDomain
 var Service *UserService
 
 type UserService struct {
-	UserRepository IUserRepository
+	UserRepository *IUserRepository
 }
 
 func NewUserService(userRepository IUserRepository) *UserService {
-	return &UserService{UserRepository: userRepository}
+	return &UserService{UserRepository: &userRepository}
 }
 
 func SetDefaultUserService(userService *UserService) {
@@ -15,7 +15,7 @@ func SetDefaultUserService(userService *UserService) {
 }
 
 func (us *UserService) UserNameToUserId(userName UserName) (UserId, error) {
-	user, err := us.UserRepository.FindByUserName(userName)
+	user, err := (*us.UserRepository).FindByUserName(userName)
 	if err != nil {
 		return "", err
 	}
@@ -23,5 +23,5 @@ func (us *UserService) UserNameToUserId(userName UserName) (UserId, error) {
 }
 
 func (us *UserService) IsExistUserName(userName UserName) bool {
-	return us.UserRepository.IsExistUserName(userName)
+	return (*us.UserRepository).IsExistUserName(userName)
 }

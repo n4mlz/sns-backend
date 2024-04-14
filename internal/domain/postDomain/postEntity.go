@@ -8,7 +8,7 @@ import (
 )
 
 type Post struct {
-	PostRepository IPostRepository
+	PostRepository *IPostRepository
 	PostId         PostId
 	Poster         *userDomain.User
 	Content        Content
@@ -20,7 +20,7 @@ func (p *Post) Like(user *userDomain.User) error {
 		return errors.New("already liked")
 	}
 
-	p.PostRepository.Like(p, user)
+	(*p.PostRepository).Like(p, user)
 	return nil
 }
 
@@ -29,18 +29,18 @@ func (p *Post) Unlike(user *userDomain.User) error {
 		return errors.New("not liked")
 	}
 
-	p.PostRepository.Unlike(p, user)
+	(*p.PostRepository).Unlike(p, user)
 	return nil
 }
 
 func (p *Post) IsLiked(user *userDomain.User) bool {
-	return p.PostRepository.IsLiked(p, user)
+	return (*p.PostRepository).IsLiked(p, user)
 }
 
 func (p *Post) GetLikeCount() (int, error) {
-	return p.PostRepository.GetLikeCount(p)
+	return (*p.PostRepository).GetLikeCount(p)
 }
 
 func (p *Post) GetLikers() ([]*userDomain.User, error) {
-	return p.PostRepository.GetLikers(p)
+	return (*p.PostRepository).GetLikers(p)
 }

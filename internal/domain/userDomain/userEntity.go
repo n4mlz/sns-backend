@@ -6,7 +6,7 @@ import (
 )
 
 type User struct {
-	UserRepository IUserRepository
+	UserRepository *IUserRepository
 	UserId         UserId
 	UserName       UserName
 	DisplayName    DisplayName
@@ -19,7 +19,7 @@ func (u *User) Follow(user *User) error {
 		return errors.New("already following")
 	}
 
-	u.UserRepository.Follow(u, user)
+	(*u.UserRepository).Follow(u, user)
 	return nil
 }
 
@@ -32,12 +32,12 @@ func (u *User) Unfollow(user *User) error {
 		return errors.New("not following")
 	}
 
-	u.UserRepository.Unfollow(u, user)
+	(*u.UserRepository).Unfollow(u, user)
 	return nil
 }
 
 func (u *User) IsFollowing(user *User) bool {
-	return u.UserRepository.IsFollowing(u, user)
+	return (*u.UserRepository).IsFollowing(u, user)
 }
 
 func (u *User) IsMutualFollow(user *User) bool {
@@ -50,9 +50,9 @@ func (u *User) GetFollowingStatus(user *User) string {
 		return OWN
 	}
 
-	isFollowing := u.UserRepository.IsFollowing(u, user)
+	isFollowing := (*u.UserRepository).IsFollowing(u, user)
 
-	isFollowed := u.UserRepository.IsFollowing(user, u)
+	isFollowed := (*u.UserRepository).IsFollowing(user, u)
 
 	if isFollowing && isFollowed {
 		return MUTUAL
@@ -66,18 +66,18 @@ func (u *User) GetFollowingStatus(user *User) string {
 }
 
 func (u *User) Followings() ([]*User, error) {
-	return u.UserRepository.FollowingUserList(u)
+	return (*u.UserRepository).FollowingUserList(u)
 }
 
 func (u *User) Followers() ([]*User, error) {
-	return u.UserRepository.FollowerUserList(u)
+	return (*u.UserRepository).FollowerUserList(u)
 }
 
 func (u *User) MutualFollows() ([]*User, error) {
-	return u.UserRepository.MutualFollowUserList(u)
+	return (*u.UserRepository).MutualFollowUserList(u)
 }
 
 // following and not followed
 func (u *User) FollowRequests() ([]*User, error) {
-	return u.UserRepository.FollowRequestUserList(u)
+	return (*u.UserRepository).FollowRequestUserList(u)
 }
