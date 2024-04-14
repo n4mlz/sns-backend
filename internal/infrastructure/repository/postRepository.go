@@ -40,6 +40,11 @@ func (r *PostRepository) Create(post *postDomain.Post) error {
 	return query.Post.WithContext(context.Background()).Create(gormPost)
 }
 
+func (r *PostRepository) Delete(post *postDomain.Post) error {
+	_, err := query.Post.WithContext(context.Background()).Where(query.Post.ID.Eq(post.PostId.String())).Delete()
+	return err
+}
+
 func (r *PostRepository) FindById(postId postDomain.PostId) (*postDomain.Post, error) {
 	if !r.IsExistPostId(postId) {
 		return nil, errors.New("post not found")

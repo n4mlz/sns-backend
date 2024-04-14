@@ -65,19 +65,19 @@ func (u *User) GetFollowingStatus(user *User) string {
 	}
 }
 
-func (u *User) FollowingUsers() ([]*User, error) {
+func (u *User) Followings() ([]*User, error) {
 	return u.UserRepository.FollowingUserList(u)
 }
 
-func (u *User) FollowerUsers() ([]*User, error) {
+func (u *User) Followers() ([]*User, error) {
 	return u.UserRepository.FollowerUserList(u)
 }
 
-func (u *User) MutualFollowUsers() ([]*User, error) {
+func (u *User) MutualFollows() ([]*User, error) {
 	return u.UserRepository.MutualFollowUserList(u)
 }
 
 // following and not followed
-func (u *User) FollowRequestUsers() ([]*User, error) {
+func (u *User) FollowRequests() ([]*User, error) {
 	return u.UserRepository.FollowRequestUserList(u)
 }

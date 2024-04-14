@@ -4,6 +4,7 @@ import "github.com/n4mlz/sns-backend/internal/domain/userDomain"
 
 type IPostRepository interface {
 	Create(*Post) error
+	Delete(*Post) error
 	FindById(PostId) (*Post, error)
 	IsExistPostId(PostId) bool
 	Like(*Post, *userDomain.User) error

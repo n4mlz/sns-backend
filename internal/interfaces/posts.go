@@ -10,5 +10,13 @@ func setPostsRoutesFrom(r *gin.RouterGroup) {
 	posts.Use(authMiddleware())
 	{
 		posts.POST("", usecases.CreatePost)
+		posts.PUT("/like", usecases.LikePost)
+		posts.PUT("/unlike", usecases.UnlikePost)
+
+		post := posts.Group("/:postId")
+		{
+			post.DELETE("", usecases.DeletePost)
+			post.GET("/likes", usecases.Likes)
+		}
 	}
 }

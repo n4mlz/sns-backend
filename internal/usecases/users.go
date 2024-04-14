@@ -49,19 +49,19 @@ func MutualFollow(ctx *gin.Context) {
 		return
 	}
 
-	sourceFollowingList, err := sourceUser.FollowingUsers()
+	sourceFollowingList, err := sourceUser.Followings()
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	sourceFollowerList, err := sourceUser.FollowerUsers()
+	sourceFollowerList, err := sourceUser.Followers()
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	targetMutualList, err := targetUser.MutualFollowUsers()
+	targetMutualList, err := targetUser.MutualFollows()
 
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})

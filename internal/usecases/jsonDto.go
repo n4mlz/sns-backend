@@ -25,6 +25,10 @@ type UserDto struct {
 	FollowingStatus string    `json:"followingStatus"`
 }
 
+type PostIdDto struct {
+	PostId string `json:"postId"`
+}
+
 type PostContentDto struct {
 	Content string `json:"content"`
 }

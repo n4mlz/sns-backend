@@ -55,3 +55,10 @@ func (pf *PostFactory) GetPost(postId PostId) (*Post, error) {
 		CreatedAt:      post.CreatedAt,
 	}, nil
 }
+
+func (pf *PostFactory) DeletePostFromRepository(sourceUser *userDomain.User, post *Post) error {
+	if sourceUser.UserId != post.Poster.UserId {
+		return errors.New("not permitted")
+	}
+	return pf.postRepository.Delete(post)
+}
