@@ -1,6 +1,6 @@
 package postDomain
 
-const MAX_POST_CONTENT_LENGTH = 256
+const MAX_CONTENT_LENGTH = 256
 
 type PostId string
 
@@ -15,5 +15,23 @@ func (c Content) String() string {
 }
 
 func (c Content) IsValid() bool {
-	return len(c) <= MAX_POST_CONTENT_LENGTH
+	return len(c) <= MAX_CONTENT_LENGTH
+}
+
+type CommentId string
+
+func (cid CommentId) String() string {
+	return string(cid)
+}
+
+type ReplyId string
+
+func (rid ReplyId) String() string {
+	return string(rid)
+}
+
+type Sequence int
+
+func (s Sequence) Int32() int32 {
+	return int32(s)
 }

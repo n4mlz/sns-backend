@@ -44,3 +44,25 @@ func (p *Post) GetLikeCount() (int, error) {
 func (p *Post) GetLikers() ([]*userDomain.User, error) {
 	return (*p.PostRepository).GetLikers(p)
 }
+
+func (p *Post) GetComments(sourceUser *userDomain.User) ([]*Comment, error) {
+	return Factory.GetComments(sourceUser, p)
+}
+
+type Comment struct {
+	CommentId CommentId
+	PostId    PostId
+	Commenter *userDomain.User
+	Content   Content
+	Replies   []*Reply
+	CreatedAt time.Time
+}
+
+type Reply struct {
+	ReplyId   ReplyId
+	CommentId CommentId
+	Replier   *userDomain.User
+	Sequence  Sequence
+	Content   Content
+	CreatedAt time.Time
+}
