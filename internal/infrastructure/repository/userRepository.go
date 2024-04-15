@@ -132,7 +132,7 @@ func (r *UserRepository) FollowerUserList(user *userDomain.User) ([]*userDomain.
 	return r.FindByIds(followerUserIdList)
 }
 
-func (r *UserRepository) MutualFollowUserList(user *userDomain.User) ([]*userDomain.User, error) {
+func (r *UserRepository) VisibleUserList(user *userDomain.User) ([]*userDomain.User, error) {
 	followers, err := query.Follow.WithContext(context.Background()).Where(query.Follow.FollowingUserID.Eq(user.UserId.String())).Find()
 	if err != nil {
 		return nil, err

@@ -1,6 +1,4 @@
-package usecases
-
-// TODO: change directory
+package utils
 
 type Set map[interface{}]struct{}
 

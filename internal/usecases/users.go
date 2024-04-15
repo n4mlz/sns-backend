@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/n4mlz/sns-backend/internal/domain/userDomain"
+	"github.com/n4mlz/sns-backend/internal/utils"
 )
 
 func User(ctx *gin.Context) {
@@ -61,19 +62,19 @@ func MutualFollow(ctx *gin.Context) {
 		return
 	}
 
-	targetMutualList, err := targetUser.MutualFollows()
+	targetMutualList, err := targetUser.VisibleUsers()
 
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	followingSet := NewSet()
+	followingSet := utils.NewSet()
 	for _, user := range sourceFollowingList {
 		followingSet.Add(user.UserId)
 	}
 
-	followerSet := NewSet()
+	followerSet := utils.NewSet()
 	for _, user := range sourceFollowerList {
 		followerSet.Add(user.UserId)
 	}

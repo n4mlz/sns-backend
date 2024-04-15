@@ -145,7 +145,6 @@ func UnlikePost(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, response)
 }
 
-// TODO: refactor logic to domain
 func Likes(ctx *gin.Context) {
 	user, err := userDomain.Factory.GetUser(userDomain.UserId(ctx.GetString("userId")))
 	if err != nil {
@@ -161,39 +160,26 @@ func Likes(ctx *gin.Context) {
 		return
 	}
 
-	allLikers, err := post.GetLikers()
+	likers, err := post.GetLikers(user)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
-	}
-
-	mutuals, err := user.MutualFollows()
-	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	mutualSet := NewSet()
-	for _, mutual := range mutuals {
-		mutualSet.Add(mutual.UserId)
 	}
 
 	var response []UserDto
-	for _, liker := range allLikers {
-		if mutualSet.Contains(liker.UserId) {
-			followingStatus := userDomain.MUTUAL
-			if liker.UserId == user.UserId {
-				followingStatus = userDomain.OWN
-			}
-
-			response = append(response, UserDto{
-				UserName:        liker.UserName.String(),
-				DisplayName:     liker.DisplayName.String(),
-				Biography:       liker.Biography.String(),
-				CreatedAt:       liker.CreatedAt,
-				FollowingStatus: followingStatus,
-			})
+	for _, liker := range likers {
+		followingStatus := userDomain.MUTUAL
+		if liker.UserId == user.UserId {
+			followingStatus = userDomain.OWN
 		}
+
+		response = append(response, UserDto{
+			UserName:        liker.UserName.String(),
+			DisplayName:     liker.DisplayName.String(),
+			Biography:       liker.Biography.String(),
+			CreatedAt:       liker.CreatedAt,
+			FollowingStatus: followingStatus,
+		})
 	}
 
 	ctx.JSON(http.StatusOK, response)

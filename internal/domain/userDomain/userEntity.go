@@ -73,8 +73,8 @@ func (u *User) Followers() ([]*User, error) {
 	return (*u.UserRepository).FollowerUserList(u)
 }
 
-func (u *User) MutualFollows() ([]*User, error) {
-	return (*u.UserRepository).MutualFollowUserList(u)
+func (u *User) VisibleUsers() ([]*User, error) {
+	return (*u.UserRepository).VisibleUserList(u)
 }
 
 // following and not followed
