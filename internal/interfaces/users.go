@@ -13,6 +13,7 @@ func setUsersRoutesFrom(r *gin.RouterGroup) {
 		{
 			user.GET("", usecases.User)
 			user.GET("/mutuals", usecases.MutualFollow)
+			user.GET("/posts", usecases.UserPosts)
 		}
 	}
 }

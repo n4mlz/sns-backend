@@ -4,7 +4,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/n4mlz/sns-backend/internal/domain/postDomain"
 	"github.com/n4mlz/sns-backend/internal/domain/userDomain"
+	"github.com/n4mlz/sns-backend/internal/utils"
 )
 
 func User(ctx *gin.Context) {
@@ -61,19 +63,19 @@ func MutualFollow(ctx *gin.Context) {
 		return
 	}
 
-	targetMutualList, err := targetUser.MutualFollows()
+	targetMutualList, err := targetUser.VisibleUsers()
 
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	followingSet := NewSet()
+	followingSet := utils.NewSet()
 	for _, user := range sourceFollowingList {
 		followingSet.Add(user.UserId)
 	}
 
-	followerSet := NewSet()
+	followerSet := utils.NewSet()
 	for _, user := range sourceFollowerList {
 		followerSet.Add(user.UserId)
 	}
@@ -82,7 +84,11 @@ func MutualFollow(ctx *gin.Context) {
 	for _, user := range targetMutualList {
 		followingStatus := userDomain.NONE
 
-		if targetUser.UserId == user.UserId {
+		if user.UserId == targetUser.UserId {
+			continue
+		}
+
+		if user.UserId == sourceUser.UserId {
 			followingStatus = userDomain.OWN
 		}
 
@@ -106,6 +112,45 @@ func MutualFollow(ctx *gin.Context) {
 			Biography:       user.Biography.String(),
 			CreatedAt:       user.CreatedAt,
 			FollowingStatus: followingStatus,
+		})
+	}
+
+	ctx.JSON(http.StatusOK, response)
+}
+
+func UserPosts(ctx *gin.Context) {
+	targetUserName := userDomain.UserName(ctx.Param("userName"))
+	targetUser, err := userDomain.Factory.GetUserByUserName(targetUserName)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	sourceUserId := userDomain.UserId(ctx.GetString("userId"))
+	sourceUser, err := userDomain.Factory.GetUser(sourceUserId)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	posts, err := postDomain.Factory.GetPostsByUser(sourceUser, targetUser)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	poster := UserDisplayDto{
+		UserName:    targetUser.UserName.String(),
+		DisplayName: targetUser.DisplayName.String(),
+	}
+
+	var response []PostDto
+	for _, post := range posts {
+		response = append(response, PostDto{
+			PostId:    post.PostId.String(),
+			Poster:    poster,
+			Content:   post.Content.String(),
+			CreatedAt: post.CreatedAt,
 		})
 	}
 

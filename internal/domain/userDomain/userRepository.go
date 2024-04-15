@@ -12,6 +12,6 @@ type IUserRepository interface {
 	IsFollowing(sourceUser *User, targetUser *User) bool
 	FollowingUserList(user *User) ([]*User, error)
 	FollowerUserList(user *User) ([]*User, error)
-	MutualFollowUserList(user *User) ([]*User, error)
+	VisibleUserList(user *User) ([]*User, error)
 	FollowRequestUserList(user *User) ([]*User, error)
 }

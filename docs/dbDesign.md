@@ -39,8 +39,6 @@
     - PK, SK
 - comment_id
     - FK
-- sequence
-    - int
 - user_id
     - FK
 - content
@@ -55,6 +53,8 @@
     - FK
 - user_id
     - FK
+- created_at
+    - timestamp
 
 ## follows
 - id

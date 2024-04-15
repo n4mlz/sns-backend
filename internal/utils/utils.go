@@ -1,4 +1,4 @@
-package usecases
+package utils
 
 type Set map[interface{}]struct{}
 

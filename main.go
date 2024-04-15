@@ -28,14 +28,21 @@ func main() {
 
 	query.SetDefault(db)
 
-	userFactory := userDomain.NewUserFactory(&repository.UserRepository{})
+	userRepository := &repository.UserRepository{}
+
+	userFactory := userDomain.NewUserFactory(userRepository)
 	userDomain.SetDefaultUserFactory(userFactory)
 
-	userService := userDomain.NewUserService(&repository.UserRepository{})
+	userService := userDomain.NewUserService(userRepository)
 	userDomain.SetDefaultUserService(userService)
 
-	postFactory := postDomain.NewPostFactory(&repository.PostRepository{})
+	postRepository := &repository.PostRepository{}
+
+	postFactory := postDomain.NewPostFactory(postRepository)
 	postDomain.SetDefaultPostFactory(postFactory)
+
+	postService := postDomain.NewPostService(postRepository)
+	postDomain.SetDefaultPostService(postService)
 
 	h.SetupRoutes()
 

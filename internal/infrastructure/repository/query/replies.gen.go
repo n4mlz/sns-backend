@@ -29,7 +29,6 @@ func newReply(db *gorm.DB, opts ...gen.DOOption) reply {
 	_reply.ALL = field.NewAsterisk(tableName)
 	_reply.ID = field.NewString(tableName, "id")
 	_reply.CommentID = field.NewString(tableName, "comment_id")
-	_reply.Sequence = field.NewInt32(tableName, "sequence")
 	_reply.UserID = field.NewString(tableName, "user_id")
 	_reply.Content = field.NewString(tableName, "content")
 	_reply.CreatedAt = field.NewTime(tableName, "created_at")
@@ -45,7 +44,6 @@ type reply struct {
 	ALL       field.Asterisk
 	ID        field.String
 	CommentID field.String
-	Sequence  field.Int32
 	UserID    field.String
 	Content   field.String
 	CreatedAt field.Time
@@ -67,7 +65,6 @@ func (r *reply) updateTableName(table string) *reply {
 	r.ALL = field.NewAsterisk(table)
 	r.ID = field.NewString(table, "id")
 	r.CommentID = field.NewString(table, "comment_id")
-	r.Sequence = field.NewInt32(table, "sequence")
 	r.UserID = field.NewString(table, "user_id")
 	r.Content = field.NewString(table, "content")
 	r.CreatedAt = field.NewTime(table, "created_at")
@@ -87,10 +84,9 @@ func (r *reply) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (r *reply) fillFieldMap() {
-	r.fieldMap = make(map[string]field.Expr, 6)
+	r.fieldMap = make(map[string]field.Expr, 5)
 	r.fieldMap["id"] = r.ID
 	r.fieldMap["comment_id"] = r.CommentID
-	r.fieldMap["sequence"] = r.Sequence
 	r.fieldMap["user_id"] = r.UserID
 	r.fieldMap["content"] = r.Content
 	r.fieldMap["created_at"] = r.CreatedAt

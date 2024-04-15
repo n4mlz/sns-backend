@@ -5,12 +5,12 @@ import "errors"
 var Factory *UserFactory
 
 type UserFactory struct {
-	userRepository IUserRepository
+	userRepository *IUserRepository
 }
 
 func NewUserFactory(userRepository IUserRepository) *UserFactory {
 	return &UserFactory{
-		userRepository: userRepository,
+		userRepository: &userRepository,
 	}
 }
 
@@ -31,7 +31,7 @@ func (uf *UserFactory) SaveUserToRepository(userId UserId, userName UserName, di
 		Biography:      biography,
 	}
 
-	err := uf.userRepository.Save(user)
+	err := (*uf.userRepository).Save(user)
 	if err != nil {
 		return nil, err
 	}
@@ -47,54 +47,36 @@ func (uf *UserFactory) SaveUserToRepository(userId UserId, userName UserName, di
 }
 
 func (uf *UserFactory) GetUser(userId UserId) (*User, error) {
-	user, err := uf.userRepository.FindById(userId)
+	user, err := (*uf.userRepository).FindById(userId)
 	if err != nil {
 		return nil, err
 	}
 
-	return &User{
-		UserRepository: uf.userRepository,
-		UserId:         user.UserId,
-		UserName:       user.UserName,
-		DisplayName:    user.DisplayName,
-		Biography:      user.Biography,
-		CreatedAt:      user.CreatedAt,
-	}, nil
+	user.UserRepository = uf.userRepository
+
+	return user, nil
 }
 
 func (uf *UserFactory) GetUsers(userIds []UserId) ([]*User, error) {
-	users, err := uf.userRepository.FindByIds(userIds)
+	users, err := (*uf.userRepository).FindByIds(userIds)
 	if err != nil {
 		return nil, err
 	}
 
-	var result []*User
 	for _, user := range users {
-		result = append(result, &User{
-			UserRepository: uf.userRepository,
-			UserId:         user.UserId,
-			UserName:       user.UserName,
-			DisplayName:    user.DisplayName,
-			Biography:      user.Biography,
-			CreatedAt:      user.CreatedAt,
-		})
+		user.UserRepository = uf.userRepository
 	}
 
-	return result, nil
+	return users, nil
 }
 
 func (uf *UserFactory) GetUserByUserName(userName UserName) (*User, error) {
-	user, err := uf.userRepository.FindByUserName(userName)
+	user, err := (*uf.userRepository).FindByUserName(userName)
 	if err != nil {
 		return nil, err
 	}
 
-	return &User{
-		UserRepository: uf.userRepository,
-		UserId:         user.UserId,
-		UserName:       user.UserName,
-		DisplayName:    user.DisplayName,
-		Biography:      user.Biography,
-		CreatedAt:      user.CreatedAt,
-	}, nil
+	user.UserRepository = uf.userRepository
+
+	return user, nil
 }

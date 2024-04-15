@@ -30,6 +30,7 @@ func newLike(db *gorm.DB, opts ...gen.DOOption) like {
 	_like.ID = field.NewString(tableName, "id")
 	_like.PostID = field.NewString(tableName, "post_id")
 	_like.UserID = field.NewString(tableName, "user_id")
+	_like.CreatedAt = field.NewTime(tableName, "created_at")
 
 	_like.fillFieldMap()
 
@@ -39,10 +40,11 @@ func newLike(db *gorm.DB, opts ...gen.DOOption) like {
 type like struct {
 	likeDo
 
-	ALL    field.Asterisk
-	ID     field.String
-	PostID field.String
-	UserID field.String
+	ALL       field.Asterisk
+	ID        field.String
+	PostID    field.String
+	UserID    field.String
+	CreatedAt field.Time
 
 	fieldMap map[string]field.Expr
 }
@@ -62,6 +64,7 @@ func (l *like) updateTableName(table string) *like {
 	l.ID = field.NewString(table, "id")
 	l.PostID = field.NewString(table, "post_id")
 	l.UserID = field.NewString(table, "user_id")
+	l.CreatedAt = field.NewTime(table, "created_at")
 
 	l.fillFieldMap()
 
@@ -78,10 +81,11 @@ func (l *like) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (l *like) fillFieldMap() {
-	l.fieldMap = make(map[string]field.Expr, 3)
+	l.fieldMap = make(map[string]field.Expr, 4)
 	l.fieldMap["id"] = l.ID
 	l.fieldMap["post_id"] = l.PostID
 	l.fieldMap["user_id"] = l.UserID
+	l.fieldMap["created_at"] = l.CreatedAt
 }
 
 func (l like) clone(db *gorm.DB) like {

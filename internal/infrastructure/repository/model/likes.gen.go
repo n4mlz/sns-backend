@@ -4,13 +4,18 @@
 
 package model
 
+import (
+	"time"
+)
+
 const TableNameLike = "likes"
 
 // Like mapped from table <likes>
 type Like struct {
-	ID     string `gorm:"column:id;type:varchar(100);primaryKey" json:"id"`
-	PostID string `gorm:"column:post_id;type:varchar(100);not null;index:likes_posts_FK,priority:1" json:"post_id"`
-	UserID string `gorm:"column:user_id;type:varchar(100);not null;index:likes_users_FK,priority:1" json:"user_id"`
+	ID        string    `gorm:"column:id;type:varchar(100);primaryKey" json:"id"`
+	PostID    string    `gorm:"column:post_id;type:varchar(100);not null;index:likes_posts_FK,priority:1" json:"post_id"`
+	UserID    string    `gorm:"column:user_id;type:varchar(100);not null;index:likes_users_FK,priority:1" json:"user_id"`
+	CreatedAt time.Time `gorm:"column:created_at;type:timestamp;not null" json:"created_at"`
 }
 
 // TableName Like's table name
