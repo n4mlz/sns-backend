@@ -52,14 +52,9 @@ func (uf *UserFactory) GetUser(userId UserId) (*User, error) {
 		return nil, err
 	}
 
-	return &User{
-		UserRepository: uf.userRepository,
-		UserId:         user.UserId,
-		UserName:       user.UserName,
-		DisplayName:    user.DisplayName,
-		Biography:      user.Biography,
-		CreatedAt:      user.CreatedAt,
-	}, nil
+	user.UserRepository = uf.userRepository
+
+	return user, nil
 }
 
 func (uf *UserFactory) GetUsers(userIds []UserId) ([]*User, error) {
@@ -68,19 +63,11 @@ func (uf *UserFactory) GetUsers(userIds []UserId) ([]*User, error) {
 		return nil, err
 	}
 
-	var result []*User
 	for _, user := range users {
-		result = append(result, &User{
-			UserRepository: uf.userRepository,
-			UserId:         user.UserId,
-			UserName:       user.UserName,
-			DisplayName:    user.DisplayName,
-			Biography:      user.Biography,
-			CreatedAt:      user.CreatedAt,
-		})
+		user.UserRepository = uf.userRepository
 	}
 
-	return result, nil
+	return users, nil
 }
 
 func (uf *UserFactory) GetUserByUserName(userName UserName) (*User, error) {
@@ -89,12 +76,7 @@ func (uf *UserFactory) GetUserByUserName(userName UserName) (*User, error) {
 		return nil, err
 	}
 
-	return &User{
-		UserRepository: uf.userRepository,
-		UserId:         user.UserId,
-		UserName:       user.UserName,
-		DisplayName:    user.DisplayName,
-		Biography:      user.Biography,
-		CreatedAt:      user.CreatedAt,
-	}, nil
+	user.UserRepository = uf.userRepository
+
+	return user, nil
 }

@@ -1,6 +1,8 @@
 package postDomain
 
-import "github.com/n4mlz/sns-backend/internal/domain/userDomain"
+import (
+	"github.com/n4mlz/sns-backend/internal/domain/userDomain"
+)
 
 type IPostRepository interface {
 	Create(*Post) error

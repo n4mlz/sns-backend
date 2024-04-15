@@ -41,19 +41,19 @@ func (pf *PostFactory) CreatePostToRepository(poster *userDomain.User, content C
 	return post, nil
 }
 
-func (pf *PostFactory) GetPost(postId PostId) (*Post, error) {
+func (pf *PostFactory) GetPost(sourceUser *userDomain.User, postId PostId) (*Post, error) {
 	post, err := (*pf.postRepository).FindById(postId)
 	if err != nil {
 		return nil, err
 	}
 
-	return &Post{
-		PostRepository: pf.postRepository,
-		PostId:         post.PostId,
-		Poster:         post.Poster,
-		Content:        post.Content,
-		CreatedAt:      post.CreatedAt,
-	}, nil
+	if !post.Poster.IsMutualFollow(sourceUser) {
+		return nil, errors.New("permission denied")
+	}
+
+	post.PostRepository = pf.postRepository
+
+	return post, nil
 }
 
 func (pf *PostFactory) DeletePostFromRepository(sourceUser *userDomain.User, post *Post) error {

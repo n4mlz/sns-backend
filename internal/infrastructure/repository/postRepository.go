@@ -23,6 +23,7 @@ func toGormPost(post *postDomain.Post) *model.Post {
 }
 
 func toPost(gormPost *model.Post) *postDomain.Post {
+	// TODO: fix N+1 problem
 	poster, _ := userDomain.Factory.GetUser(userDomain.UserId(gormPost.UserID))
 
 	return &postDomain.Post{
