@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/n4mlz/sns-backend/internal/domain/postDomain"
 	"github.com/n4mlz/sns-backend/internal/domain/userDomain"
 	"github.com/n4mlz/sns-backend/internal/utils"
 )
@@ -111,6 +112,45 @@ func MutualFollow(ctx *gin.Context) {
 			Biography:       user.Biography.String(),
 			CreatedAt:       user.CreatedAt,
 			FollowingStatus: followingStatus,
+		})
+	}
+
+	ctx.JSON(http.StatusOK, response)
+}
+
+func UserPosts(ctx *gin.Context) {
+	targetUserName := userDomain.UserName(ctx.Param("userName"))
+	targetUser, err := userDomain.Factory.GetUserByUserName(targetUserName)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	sourceUserId := userDomain.UserId(ctx.GetString("userId"))
+	sourceUser, err := userDomain.Factory.GetUser(sourceUserId)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	posts, err := postDomain.Factory.GetPostsByUser(sourceUser, targetUser)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	poster := UserDisplayDto{
+		UserName:    targetUser.UserName.String(),
+		DisplayName: targetUser.DisplayName.String(),
+	}
+
+	var response []PostDto
+	for _, post := range posts {
+		response = append(response, PostDto{
+			PostId:    post.PostId.String(),
+			Poster:    poster,
+			Content:   post.Content.String(),
+			CreatedAt: post.CreatedAt,
 		})
 	}
 

@@ -8,6 +8,7 @@ type IPostRepository interface {
 	Create(*Post) (*Post, error)
 	Delete(*Post) error
 	FindPostById(PostId) (*Post, error)
+	FindPostsByUserId(userDomain.UserId) ([]*Post, error)
 	IsExistPostId(PostId) bool
 	Like(*Post, *userDomain.User) error
 	Unlike(*Post, *userDomain.User) error
