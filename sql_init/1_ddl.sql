@@ -70,6 +70,7 @@ CREATE TABLE `likes` (
   `id` varchar(100) NOT NULL,
   `post_id` varchar(100) NOT NULL,
   `user_id` varchar(100) NOT NULL,
+  `created_at` timestamp NOT NULL,
   PRIMARY KEY (`id`),
   KEY `likes_posts_FK` (`post_id`),
   KEY `likes_users_FK` (`user_id`),
@@ -106,7 +107,6 @@ DROP TABLE IF EXISTS `replies`;
 CREATE TABLE `replies` (
   `id` varchar(100) NOT NULL,
   `comment_id` varchar(100) NOT NULL,
-  `sequence` int(11) NOT NULL,
   `user_id` varchar(100) NOT NULL,
   `content` text NOT NULL,
   `created_at` timestamp NOT NULL,
@@ -145,4 +145,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-03-22 15:51:28
+-- Dump completed on 2024-04-15 20:07:55

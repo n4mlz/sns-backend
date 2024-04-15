@@ -29,9 +29,3 @@ type ReplyId string
 func (rid ReplyId) String() string {
 	return string(rid)
 }
-
-type Sequence int
-
-func (s Sequence) Int32() int32 {
-	return int32(s)
-}

@@ -41,6 +41,9 @@ func main() {
 	postFactory := postDomain.NewPostFactory(postRepository)
 	postDomain.SetDefaultPostFactory(postFactory)
 
+	postService := postDomain.NewPostService(postRepository)
+	postDomain.SetDefaultPostService(postService)
+
 	h.SetupRoutes()
 
 	h.Router.Run(":8080")

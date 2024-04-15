@@ -57,6 +57,8 @@ func toComment(gormComment *model.Comment) *postDomain.Comment {
 		replies = append(replies, toReply(gormReply))
 	}
 
+	replies = postDomain.Service.SortReplies(replies)
+
 	return &postDomain.Comment{
 		CommentId: postDomain.CommentId(gormComment.ID),
 		PostId:    postDomain.PostId(gormComment.PostID),
@@ -72,7 +74,6 @@ func toGormReply(reply *postDomain.Reply) *model.Reply {
 		ID:        reply.ReplyId.String(),
 		CommentID: reply.CommentId.String(),
 		UserID:    reply.Replier.UserId.String(),
-		Sequence:  reply.Sequence.Int32(),
 		Content:   reply.Content.String(),
 		CreatedAt: reply.CreatedAt,
 	}
@@ -86,7 +87,6 @@ func toReply(gormReply *model.Reply) *postDomain.Reply {
 		ReplyId:   postDomain.ReplyId(gormReply.ID),
 		CommentId: postDomain.CommentId(gormReply.CommentID),
 		Replier:   replier,
-		Sequence:  postDomain.Sequence(gormReply.Sequence),
 		Content:   postDomain.Content(gormReply.Content),
 		CreatedAt: gormReply.CreatedAt,
 	}
