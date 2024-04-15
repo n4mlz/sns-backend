@@ -1,5 +1,7 @@
 package usecases
 
+// TODO: change directory
+
 type Set map[interface{}]struct{}
 
 func NewSet() *Set {

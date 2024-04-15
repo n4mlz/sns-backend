@@ -42,3 +42,38 @@ type PostDto struct {
 	Comments  int            `json:"comments"`
 	CreatedAt time.Time      `json:"createdAt"`
 }
+
+type PostDetailDto struct {
+	PostId    string         `json:"postId"`
+	Poster    UserDisplayDto `json:"poster"`
+	Content   string         `json:"content"`
+	Likes     int            `json:"likes"`
+	Liked     bool           `json:"liked"`
+	Comments  []CommentDto   `json:"comments"`
+	CreatedAt time.Time      `json:"createdAt"`
+}
+
+type CreateCommentDto struct {
+	PostId  string `json:"postId"`
+	Content string `json:"content"`
+}
+
+type CommentDto struct {
+	CommentId string         `json:"commentId"`
+	Commenter UserDisplayDto `json:"commenter"`
+	Content   string         `json:"content"`
+	Replies   []ReplyDto     `json:"replies"`
+	CreatedAt time.Time      `json:"createdAt"`
+}
+
+type CreateReplyDto struct {
+	CommentId string `json:"commentId"`
+	Content   string `json:"content"`
+}
+
+type ReplyDto struct {
+	ReplyId   string         `json:"replyId"`
+	Replier   UserDisplayDto `json:"replier"`
+	Content   string         `json:"content"`
+	CreatedAt time.Time      `json:"createdAt"`
+}

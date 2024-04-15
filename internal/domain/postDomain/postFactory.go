@@ -34,7 +34,7 @@ func (pf *PostFactory) CreatePostToRepository(poster *userDomain.User, content C
 		Content:        content,
 	}
 
-	err := (*pf.postRepository).Create(post)
+	post, err := (*pf.postRepository).Create(post)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func (pf *PostFactory) GetPost(sourceUser *userDomain.User, postId PostId) (*Pos
 		return nil, err
 	}
 
-	if !post.Poster.IsMutualFollow(sourceUser) {
+	if !post.Poster.IsVisible(sourceUser) {
 		return nil, errors.New("permission denied")
 	}
 
@@ -69,7 +69,7 @@ func (pf *PostFactory) CreateCommentToRepository(post *Post, commenter *userDoma
 		return nil, errors.New("invalid content")
 	}
 
-	if !post.Poster.IsMutualFollow(commenter) {
+	if !post.Poster.IsVisible(commenter) {
 		return nil, errors.New("permission denied")
 	}
 
@@ -79,7 +79,7 @@ func (pf *PostFactory) CreateCommentToRepository(post *Post, commenter *userDoma
 		Content:   content,
 	}
 
-	err := (*pf.postRepository).CreateComment(comment)
+	comment, err := (*pf.postRepository).CreateComment(comment)
 	if err != nil {
 		return nil, err
 	}
@@ -87,26 +87,63 @@ func (pf *PostFactory) CreateCommentToRepository(post *Post, commenter *userDoma
 	return comment, nil
 }
 
+func (pf *PostFactory) GetComment(sourceUser *userDomain.User, commentId CommentId) (*Comment, error) {
+	comment, err := (*pf.postRepository).FindCommentById(commentId)
+	if err != nil {
+		return nil, err
+	}
+
+	if !comment.Commenter.IsVisible(sourceUser) {
+		return nil, errors.New("permission denied")
+	}
+
+	for _, reply := range comment.Replies {
+		// fix N+1 problem
+		if !reply.Replier.IsVisible(sourceUser) {
+			reply.Replier = nil
+			reply.Content = ""
+			reply.CreatedAt = time.Time{}
+		}
+	}
+
+	return comment, nil
+}
+
 func (pf *PostFactory) GetComments(sourceUser *userDomain.User, post *Post) ([]*Comment, error) {
-	comments, err := (*pf.postRepository).FindCommentByPostId(post.PostId)
+	comments, err := (*pf.postRepository).FindCommentsByPostId(post.PostId)
 	if err != nil {
 		return nil, err
 	}
 
 	var result []*Comment
 	for _, comment := range comments {
-		if comment.Commenter.IsMutualFollow(sourceUser) {
+		// TODO: fix N+1 problem
+		if comment.Commenter.IsVisible(sourceUser) {
 			for _, reply := range comment.Replies {
-				if !reply.Replier.IsMutualFollow(sourceUser) {
+				// TODO: fix N+1 problem
+				if !reply.Replier.IsVisible(sourceUser) {
 					reply.Replier = nil
 					reply.Content = ""
 					reply.CreatedAt = time.Time{}
 				}
-				result = append(result, comment)
 			}
+			result = append(result, comment)
 		}
 	}
 	return result, nil
+}
+
+func (pf *PostFactory) GetReply(sourceUser *userDomain.User, replyId ReplyId) (*Reply, error) {
+	reply, err := (*pf.postRepository).FindReplyById(replyId)
+	if err != nil {
+		return nil, err
+	}
+
+	if !reply.Replier.IsVisible(sourceUser) {
+		return nil, errors.New("permission denied")
+	}
+
+	return reply, nil
 }
 
 func (pf *PostFactory) DeleteCommentFromRepository(sourceUser *userDomain.User, comment *Comment) error {
@@ -122,7 +159,7 @@ func (pf *PostFactory) CreateReplyToRepository(comment *Comment, replier *userDo
 		return nil, errors.New("invalid content")
 	}
 
-	if !comment.Commenter.IsMutualFollow(replier) {
+	if !comment.Commenter.IsVisible(replier) {
 		return nil, errors.New("permission denied")
 	}
 
@@ -132,7 +169,7 @@ func (pf *PostFactory) CreateReplyToRepository(comment *Comment, replier *userDo
 		Content:   content,
 	}
 
-	err := (*pf.postRepository).CreateReply(reply)
+	reply, err := (*pf.postRepository).CreateReply(reply)
 	if err != nil {
 		return nil, err
 	}

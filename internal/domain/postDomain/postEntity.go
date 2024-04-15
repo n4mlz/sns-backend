@@ -62,6 +62,7 @@ type Reply struct {
 	ReplyId   ReplyId
 	CommentId CommentId
 	Replier   *userDomain.User
+	// TODO: delete Sequence and sort by CreatedAt
 	Sequence  Sequence
 	Content   Content
 	CreatedAt time.Time

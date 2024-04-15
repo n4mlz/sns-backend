@@ -92,11 +92,12 @@ func toReply(gormReply *model.Reply) *postDomain.Reply {
 	}
 }
 
-func (r *PostRepository) Create(post *postDomain.Post) error {
+func (r *PostRepository) Create(post *postDomain.Post) (*postDomain.Post, error) {
 	gormPost := toGormPost(post)
 	gormPost.ID = xid.New().String()
 
-	return query.Post.WithContext(context.Background()).Create(gormPost)
+	err := query.Post.WithContext(context.Background()).Create(gormPost)
+	return toPost(gormPost), err
 }
 
 func (r *PostRepository) Delete(post *postDomain.Post) error {
@@ -157,9 +158,12 @@ func (r *PostRepository) GetLikers(post *postDomain.Post) ([]*userDomain.User, e
 	return userDomain.Factory.GetUsers(likerUserIdList)
 }
 
-func (r *PostRepository) CreateComment(comment *postDomain.Comment) error {
+func (r *PostRepository) CreateComment(comment *postDomain.Comment) (*postDomain.Comment, error) {
 	gormComment := toGormComment(comment)
-	return query.Comment.WithContext(context.Background()).Save(gormComment)
+	gormComment.ID = xid.New().String()
+
+	err := query.Comment.WithContext(context.Background()).Save(gormComment)
+	return toComment(gormComment), err
 }
 
 func (r *PostRepository) DeleteComment(comment *postDomain.Comment) error {
@@ -167,9 +171,12 @@ func (r *PostRepository) DeleteComment(comment *postDomain.Comment) error {
 	return err
 }
 
-func (r *PostRepository) CreateReply(reply *postDomain.Reply) error {
+func (r *PostRepository) CreateReply(reply *postDomain.Reply) (*postDomain.Reply, error) {
 	gormReply := toGormReply(reply)
-	return query.Reply.WithContext(context.Background()).Save(gormReply)
+	gormReply.ID = xid.New().String()
+
+	err := query.Reply.WithContext(context.Background()).Save(gormReply)
+	return toReply(gormReply), err
 }
 
 func (r *PostRepository) DeleteReply(reply *postDomain.Reply) error {
@@ -177,7 +184,16 @@ func (r *PostRepository) DeleteReply(reply *postDomain.Reply) error {
 	return err
 }
 
-func (r *PostRepository) FindCommentByPostId(postId postDomain.PostId) ([]*postDomain.Comment, error) {
+func (r *PostRepository) FindCommentById(commentId postDomain.CommentId) (*postDomain.Comment, error) {
+	if !r.IsExistCommentId(commentId) {
+		return nil, errors.New("comment not found")
+	}
+
+	gormComment, err := query.Comment.WithContext(context.Background()).Where(query.Comment.ID.Eq(commentId.String())).Take()
+	return toComment(gormComment), err
+}
+
+func (r *PostRepository) FindCommentsByPostId(postId postDomain.PostId) ([]*postDomain.Comment, error) {
 	gormComments, err := query.Comment.WithContext(context.Background()).Where(query.Comment.PostID.Eq(postId.String())).Find()
 	if err != nil {
 		return nil, err
@@ -190,6 +206,15 @@ func (r *PostRepository) FindCommentByPostId(postId postDomain.PostId) ([]*postD
 	}
 
 	return comments, nil
+}
+
+func (r *PostRepository) FindReplyById(replyId postDomain.ReplyId) (*postDomain.Reply, error) {
+	if !r.IsExistReplyId(replyId) {
+		return nil, errors.New("reply not found")
+	}
+
+	gormReply, err := query.Reply.WithContext(context.Background()).Where(query.Reply.ID.Eq(replyId.String())).Take()
+	return toReply(gormReply), err
 }
 
 func (r *PostRepository) IsExistCommentId(commentId postDomain.CommentId) bool {

@@ -82,7 +82,11 @@ func MutualFollow(ctx *gin.Context) {
 	for _, user := range targetMutualList {
 		followingStatus := userDomain.NONE
 
-		if targetUser.UserId == user.UserId {
+		if user.UserId == targetUser.UserId {
+			continue
+		}
+
+		if user.UserId == sourceUser.UserId {
 			followingStatus = userDomain.OWN
 		}
 
