@@ -21,5 +21,6 @@ func (h *Handler) SetupRoutes() {
 		setUsersRoutesFrom(api)
 		setFollowsRoutesFrom(api)
 		setPostsRoutesFrom(api)
+		setActivityRoutesFrom(api)
 	}
 }
