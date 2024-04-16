@@ -12,6 +12,7 @@ func setPostsRoutesFrom(r *gin.RouterGroup) {
 		posts.POST("", usecases.CreatePost)
 		posts.PUT("/like", usecases.LikePost)
 		posts.PUT("/unlike", usecases.UnlikePost)
+		posts.GET("/timeline", usecases.Timeline)
 
 		comments := posts.Group("/comments")
 		{
