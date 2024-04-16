@@ -126,7 +126,7 @@ func (r *PostRepository) FindPostsByUserId(userId userDomain.UserId) ([]*postDom
 		posts = append(posts, toPost(gormPost))
 	}
 
-	posts = postDomain.Service.SortPosts(posts)
+	posts = postDomain.Service.SortPostsByOldestToNewest(posts)
 	return posts, nil
 }
 
@@ -147,7 +147,7 @@ func (r *PostRepository) FindPostsByUserIds(userIds []userDomain.UserId) ([]*pos
 		posts = append(posts, toPost(gormPost))
 	}
 
-	posts = postDomain.Service.SortPosts(posts)
+	posts = postDomain.Service.SortPostsByNewestToOldest(posts)
 	return posts, nil
 }
 
