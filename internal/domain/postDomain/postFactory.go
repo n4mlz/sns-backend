@@ -76,6 +76,31 @@ func (pf *PostFactory) GetPostsByUser(sourceUser *userDomain.User, targetUser *u
 	return result, nil
 }
 
+func (pf *PostFactory) GetPostsByVisibleUsers(sourceUser *userDomain.User) ([]*Post, error) {
+	visibleUsers, err := sourceUser.VisibleUsers()
+	if err != nil {
+		return nil, err
+	}
+
+	var userIds []userDomain.UserId
+	for _, user := range visibleUsers {
+		userIds = append(userIds, user.UserId)
+	}
+
+	posts, err := (*pf.postRepository).FindPostsByUserIds(userIds)
+	if err != nil {
+		return nil, err
+	}
+
+	var result []*Post
+	for _, post := range posts {
+		post.PostRepository = pf.postRepository
+		result = append(result, post)
+	}
+
+	return result, nil
+}
+
 func (pf *PostFactory) DeletePostFromRepository(sourceUser *userDomain.User, post *Post) error {
 	if sourceUser.UserId != post.Poster.UserId {
 		return errors.New("not permitted")

@@ -16,9 +16,16 @@ func SetDefaultPostService(postService *PostService) {
 	Service = postService
 }
 
-func (ps *PostService) SortPosts(posts []*Post) []*Post {
+func (ps *PostService) SortPostsByOldestToNewest(posts []*Post) []*Post {
 	sort.Slice(posts, func(i, j int) bool {
 		return posts[i].CreatedAt.Before(posts[j].CreatedAt)
+	})
+	return posts
+}
+
+func (ps *PostService) SortPostsByNewestToOldest(posts []*Post) []*Post {
+	sort.Slice(posts, func(i, j int) bool {
+		return posts[i].CreatedAt.After(posts[j].CreatedAt)
 	})
 	return posts
 }

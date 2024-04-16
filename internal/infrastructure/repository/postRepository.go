@@ -126,7 +126,28 @@ func (r *PostRepository) FindPostsByUserId(userId userDomain.UserId) ([]*postDom
 		posts = append(posts, toPost(gormPost))
 	}
 
-	posts = postDomain.Service.SortPosts(posts)
+	posts = postDomain.Service.SortPostsByOldestToNewest(posts)
+	return posts, nil
+}
+
+func (r *PostRepository) FindPostsByUserIds(userIds []userDomain.UserId) ([]*postDomain.Post, error) {
+	var userIdsString []string
+	for _, userId := range userIds {
+		userIdsString = append(userIdsString, userId.String())
+	}
+
+	gormPosts, err := query.Post.WithContext(context.Background()).Where(query.Post.UserID.In(userIdsString...)).Find()
+	if err != nil {
+		return nil, err
+	}
+
+	var posts []*postDomain.Post
+	for _, gormPost := range gormPosts {
+		// TODO: fix N+1 problem
+		posts = append(posts, toPost(gormPost))
+	}
+
+	posts = postDomain.Service.SortPostsByNewestToOldest(posts)
 	return posts, nil
 }
 
