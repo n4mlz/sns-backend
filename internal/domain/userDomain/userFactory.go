@@ -5,12 +5,14 @@ import "errors"
 var Factory *UserFactory
 
 type UserFactory struct {
-	userRepository *IUserRepository
+	userRepository      *IUserRepository
+	userImageRepository *IUserImageRepository
 }
 
-func NewUserFactory(userRepository IUserRepository) *UserFactory {
+func NewUserFactory(userRepository IUserRepository, userImageRepository IUserImageRepository) *UserFactory {
 	return &UserFactory{
-		userRepository: &userRepository,
+		userRepository:      &userRepository,
+		userImageRepository: &userImageRepository,
 	}
 }
 
@@ -24,11 +26,29 @@ func (uf *UserFactory) SaveUserToRepository(userId UserId, userName UserName, di
 	}
 
 	user := &User{
-		UserRepository: uf.userRepository,
-		UserId:         userId,
-		UserName:       userName,
-		DisplayName:    displayName,
-		Biography:      biography,
+		userRepository:      uf.userRepository,
+		userImageRepository: uf.userImageRepository,
+		UserId:              userId,
+		UserName:            userName,
+		DisplayName:         displayName,
+		Biography:           biography,
+	}
+
+	if (*uf.userRepository).IsExistUserId(userId) && !(*uf.userRepository).IsExistUserName(userName) {
+		oldUser, err := (*uf.userRepository).FindById(userId)
+		if err != nil {
+			return nil, err
+		}
+
+		err = (*uf.userImageRepository).Move(oldUser.UserIconImageUrl(), user.UserIconImageUrl())
+		if err != nil {
+			return nil, err
+		}
+
+		err = (*uf.userImageRepository).Move(oldUser.UserBgImageUrl(), user.UserBgImageUrl())
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	err := (*uf.userRepository).Save(user)
@@ -52,7 +72,8 @@ func (uf *UserFactory) GetUser(userId UserId) (*User, error) {
 		return nil, err
 	}
 
-	user.UserRepository = uf.userRepository
+	user.userRepository = uf.userRepository
+	user.userImageRepository = uf.userImageRepository
 
 	return user, nil
 }
@@ -64,7 +85,8 @@ func (uf *UserFactory) GetUsers(userIds []UserId) ([]*User, error) {
 	}
 
 	for _, user := range users {
-		user.UserRepository = uf.userRepository
+		user.userRepository = uf.userRepository
+		user.userImageRepository = uf.userImageRepository
 	}
 
 	return users, nil
@@ -76,7 +98,8 @@ func (uf *UserFactory) GetUserByUserName(userName UserName) (*User, error) {
 		return nil, err
 	}
 
-	user.UserRepository = uf.userRepository
+	user.userRepository = uf.userRepository
+	user.userImageRepository = uf.userImageRepository
 
 	return user, nil
 }

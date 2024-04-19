@@ -22,3 +22,6 @@ go.work
 
 # Service account key for Firebase 
 serviceAccountKey.json
+
+# Docker Environment Variables
+.env

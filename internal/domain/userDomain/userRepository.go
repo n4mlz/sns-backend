@@ -1,5 +1,7 @@
 package userDomain
 
+import "io"
+
 type IUserRepository interface {
 	Save(user *User) error
 	FindById(id UserId) (*User, error)
@@ -14,4 +16,12 @@ type IUserRepository interface {
 	FollowerUserList(user *User) ([]*User, error)
 	VisibleUserList(user *User) ([]*User, error)
 	FollowRequestUserList(user *User) ([]*User, error)
+}
+
+type IUserImageRepository interface {
+	SaveIcon(objectKey string, file io.Reader) error
+	SaveBgImage(objectKey string, file io.Reader) error
+	SaveBinary(objectKey string, fileBytes []byte) error
+	Delete(objectKey string) error
+	Move(sourceObjectKey string, targetObjectKey string) error
 }

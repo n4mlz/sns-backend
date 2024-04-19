@@ -6,6 +6,7 @@ import (
 	"github.com/n4mlz/sns-backend/internal/domain/userDomain"
 	"github.com/n4mlz/sns-backend/internal/infrastructure/repository"
 	"github.com/n4mlz/sns-backend/internal/infrastructure/repository/query"
+	"github.com/n4mlz/sns-backend/internal/infrastructure/s3"
 	"github.com/n4mlz/sns-backend/internal/infrastructure/validation"
 	"github.com/n4mlz/sns-backend/internal/interfaces"
 )
@@ -30,7 +31,13 @@ func main() {
 
 	userRepository := &repository.UserRepository{}
 
-	userFactory := userDomain.NewUserFactory(userRepository)
+	s3app, err := s3.NewS3App()
+	if err != nil {
+		return
+	}
+	userImageRepository := s3app
+
+	userFactory := userDomain.NewUserFactory(userRepository, userImageRepository)
 	userDomain.SetDefaultUserFactory(userFactory)
 
 	userService := userDomain.NewUserService(userRepository)

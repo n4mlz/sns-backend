@@ -35,3 +35,63 @@ func SaveProfile(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, response)
 }
+
+func SaveIcon(ctx *gin.Context) {
+	file, err := ctx.FormFile("image")
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	userId := userDomain.UserId(ctx.GetString("userId"))
+	user, err := userDomain.Factory.GetUser(userId)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	img, err := file.Open()
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	defer img.Close()
+
+	err = user.SaveIcon(img)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "success"})
+}
+
+func SaveBgImage(ctx *gin.Context) {
+	file, err := ctx.FormFile("image")
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	userId := userDomain.UserId(ctx.GetString("userId"))
+	user, err := userDomain.Factory.GetUser(userId)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	img, err := file.Open()
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	defer img.Close()
+
+	err = user.SaveBgImage(img)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "success"})
+}
