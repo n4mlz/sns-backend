@@ -1,4 +1,4 @@
-package images
+package s3
 
 import (
 	"context"
@@ -12,22 +12,20 @@ import (
 )
 
 var (
-	ACCOUNT_ID        = os.Getenv("ACCOUNT_ID")
-	ACCESS_KEY_ID     = os.Getenv("ACCESS_KEY_ID")
-	ACCESS_KEY_SECRET = os.Getenv("ACCESS_KEY_SECRET")
-	ENDPOINT          = os.Getenv("ENDPOINT") // r2.cloudflarestorage.com
+	ACCOUNT_ID        = os.Getenv("S3_ACCOUNT_ID")
+	ACCESS_KEY_ID     = os.Getenv("S3_ACCESS_KEY_ID")
+	ACCESS_KEY_SECRET = os.Getenv("S3_ACCESS_KEY_SECRET")
+	ENDPOINT          = os.Getenv("S3_ENDPOINT")
 )
 
-var BUCKET_NAME = os.Getenv("BUCKET_NAME")
-
-var App *S3App
+var BUCKET_NAME = os.Getenv("S3_BUCKET_NAME")
 
 type S3App struct {
 	Client     *s3.Client
 	BucketName string
 }
 
-func NewClient(accountId string, accessKeyId string, accessKeySecret string, endpoint string) (*s3.Client, error) {
+func newClient(accountId string, accessKeyId string, accessKeySecret string, endpoint string) (*s3.Client, error) {
 	r2Resolver := aws.EndpointResolverWithOptionsFunc(func(service, region string, options ...interface{}) (aws.Endpoint, error) {
 		return aws.Endpoint{URL: fmt.Sprintf("https://%s.%s", accountId, endpoint)}, nil
 	})
@@ -44,16 +42,14 @@ func NewClient(accountId string, accessKeyId string, accessKeySecret string, end
 	return s3.NewFromConfig(cfg), nil
 }
 
-func InitS3App() error {
-	client, err := NewClient(ACCOUNT_ID, ACCESS_KEY_ID, ACCESS_KEY_SECRET, ENDPOINT)
+func NewS3App() (*S3App, error) {
+	client, err := newClient(ACCOUNT_ID, ACCESS_KEY_ID, ACCESS_KEY_SECRET, ENDPOINT)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	App = &S3App{
+	return &S3App{
 		Client:     client,
 		BucketName: BUCKET_NAME,
-	}
-
-	return nil
+	}, nil
 }

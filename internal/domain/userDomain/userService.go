@@ -1,5 +1,9 @@
 package userDomain
 
+import "os"
+
+var IMAGE_REPOSITORY_URL = os.Getenv("IMAGE_REPOSITORY_URL")
+
 var Service *UserService
 
 type UserService struct {

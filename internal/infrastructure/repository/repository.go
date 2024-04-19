@@ -3,18 +3,18 @@ package repository
 import (
 	"fmt"
 	"log"
+	"os"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
-// TODO: 環境変数から読み込むようにする
-const (
-	dbUser   = "root"
-	password = "password"
-	host     = "db"
-	port     = "3306"
-	dbName   = "sns"
+var (
+	dbUser   = os.Getenv("DB_USER")
+	password = os.Getenv("DB_PASSWORD")
+	host     = os.Getenv("DB_HOST")
+	port     = os.Getenv("DB_PORT")
+	dbName   = os.Getenv("DB_NAME")
 )
 
 func NewRepository() (db *gorm.DB, err error) {

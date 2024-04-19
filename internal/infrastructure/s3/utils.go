@@ -1,4 +1,4 @@
-package images
+package s3
 
 import (
 	"bytes"

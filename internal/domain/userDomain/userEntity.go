@@ -2,16 +2,20 @@ package userDomain
 
 import (
 	"errors"
+	"os"
 	"time"
+
+	"github.com/n4mlz/sns-backend/internal/utils"
 )
 
 type User struct {
-	UserRepository *IUserRepository
-	UserId         UserId
-	UserName       UserName
-	DisplayName    DisplayName
-	Biography      Biography
-	CreatedAt      time.Time
+	userRepository      *IUserRepository
+	userImageRepository *IUserImageRepository
+	UserId              UserId
+	UserName            UserName
+	DisplayName         DisplayName
+	Biography           Biography
+	CreatedAt           time.Time
 }
 
 func (u *User) Follow(user *User) error {
@@ -19,7 +23,7 @@ func (u *User) Follow(user *User) error {
 		return errors.New("already following")
 	}
 
-	(*u.UserRepository).Follow(u, user)
+	(*u.userRepository).Follow(u, user)
 	return nil
 }
 
@@ -32,12 +36,12 @@ func (u *User) Unfollow(user *User) error {
 		return errors.New("not following")
 	}
 
-	(*u.UserRepository).Unfollow(u, user)
+	(*u.userRepository).Unfollow(u, user)
 	return nil
 }
 
 func (u *User) IsFollowing(user *User) bool {
-	return (*u.UserRepository).IsFollowing(u, user)
+	return (*u.userRepository).IsFollowing(u, user)
 }
 
 func (u *User) IsVisible(user *User) bool {
@@ -50,9 +54,9 @@ func (u *User) GetFollowingStatus(user *User) string {
 		return OWN
 	}
 
-	isFollowing := (*u.UserRepository).IsFollowing(u, user)
+	isFollowing := (*u.userRepository).IsFollowing(u, user)
 
-	isFollowed := (*u.UserRepository).IsFollowing(user, u)
+	isFollowed := (*u.userRepository).IsFollowing(user, u)
 
 	if isFollowing && isFollowed {
 		return MUTUAL
@@ -66,18 +70,46 @@ func (u *User) GetFollowingStatus(user *User) string {
 }
 
 func (u *User) Followings() ([]*User, error) {
-	return (*u.UserRepository).FollowingUserList(u)
+	return (*u.userRepository).FollowingUserList(u)
 }
 
 func (u *User) Followers() ([]*User, error) {
-	return (*u.UserRepository).FollowerUserList(u)
+	return (*u.userRepository).FollowerUserList(u)
 }
 
 func (u *User) VisibleUsers() ([]*User, error) {
-	return (*u.UserRepository).VisibleUserList(u)
+	return (*u.userRepository).VisibleUserList(u)
 }
 
 // following and not followed
 func (u *User) FollowRequests() ([]*User, error) {
-	return (*u.UserRepository).FollowRequestUserList(u)
+	return (*u.userRepository).FollowRequestUserList(u)
+}
+
+func (u *User) UserIconImageUrl() string {
+	return utils.JoinPath(IMAGE_REPOSITORY_URL, "images", "user", u.UserName.String(), "icon.png")
+}
+
+func (u *User) UserBgImageUrl() string {
+	return utils.JoinPath(IMAGE_REPOSITORY_URL, "images", "user", u.UserName.String(), "background.png")
+}
+
+func (u *User) UpdateIconImage(file *os.File) error {
+	objectKey := u.UserIconImageUrl()
+	return (*u.userImageRepository).SaveImage(objectKey, file)
+}
+
+func (u *User) UpdateBgImage(file *os.File) error {
+	objectKey := u.UserBgImageUrl()
+	return (*u.userImageRepository).SaveImage(objectKey, file)
+}
+
+func (u *User) DeleteIconImage() error {
+	objectKey := u.UserIconImageUrl()
+	return (*u.userImageRepository).Delete(objectKey)
+}
+
+func (u *User) DeleteBgImage() error {
+	objectKey := u.UserBgImageUrl()
+	return (*u.userImageRepository).Delete(objectKey)
 }
