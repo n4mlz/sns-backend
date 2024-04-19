@@ -4,14 +4,27 @@ import (
 	"bytes"
 	"context"
 	"io"
-	"os"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
-func (app *S3App) SaveImage(objectKey string, file *os.File) error {
-	fileBytes, err := fotmatImage(file)
+func (app *S3App) SaveIcon(objectKey string, file io.Reader) error {
+	fileBytes, err := fotmatImageForIcon(file)
+	if err != nil {
+		return err
+	}
+
+	err = app.SaveBinary(objectKey, fileBytes)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (app *S3App) SaveBgImage(objectKey string, file io.Reader) error {
+	fileBytes, err := fotmatImageForBgImage(file)
 	if err != nil {
 		return err
 	}

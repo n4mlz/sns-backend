@@ -1,6 +1,6 @@
 package userDomain
 
-import "os"
+import "io"
 
 type IUserRepository interface {
 	Save(user *User) error
@@ -19,7 +19,8 @@ type IUserRepository interface {
 }
 
 type IUserImageRepository interface {
-	SaveImage(objectKey string, file *os.File) error
+	SaveIcon(objectKey string, file io.Reader) error
+	SaveBgImage(objectKey string, file io.Reader) error
 	SaveBinary(objectKey string, fileBytes []byte) error
 	Delete(objectKey string) error
 	Move(sourceObjectKey string, targetObjectKey string) error

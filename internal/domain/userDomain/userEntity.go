@@ -2,10 +2,9 @@ package userDomain
 
 import (
 	"errors"
-	"os"
+	"io"
+	"path"
 	"time"
-
-	"github.com/n4mlz/sns-backend/internal/utils"
 )
 
 type User struct {
@@ -87,24 +86,24 @@ func (u *User) FollowRequests() ([]*User, error) {
 }
 
 func (u *User) UserIconImageUrl() string {
-	return utils.JoinPath(IMAGE_REPOSITORY_URL, "images", "user", u.UserName.String(), "icon.png")
+	return path.Join("images", "user", u.UserName.String(), "icon.png")
 }
 
 func (u *User) UserBgImageUrl() string {
-	return utils.JoinPath(IMAGE_REPOSITORY_URL, "images", "user", u.UserName.String(), "background.png")
+	return path.Join("images", "user", u.UserName.String(), "background.png")
 }
 
-func (u *User) UpdateIconImage(file *os.File) error {
+func (u *User) SaveIcon(file io.Reader) error {
 	objectKey := u.UserIconImageUrl()
-	return (*u.userImageRepository).SaveImage(objectKey, file)
+	return (*u.userImageRepository).SaveIcon(objectKey, file)
 }
 
-func (u *User) UpdateBgImage(file *os.File) error {
+func (u *User) SaveBgImage(file io.Reader) error {
 	objectKey := u.UserBgImageUrl()
-	return (*u.userImageRepository).SaveImage(objectKey, file)
+	return (*u.userImageRepository).SaveBgImage(objectKey, file)
 }
 
-func (u *User) DeleteIconImage() error {
+func (u *User) DeleteIcon() error {
 	objectKey := u.UserIconImageUrl()
 	return (*u.userImageRepository).Delete(objectKey)
 }
