@@ -13,6 +13,7 @@ import (
 
 func main() {
 	r := gin.Default()
+	interfaces.SetCors(r)
 	r.ContextWithFallback = true
 
 	h := interfaces.NewHandler(r)
