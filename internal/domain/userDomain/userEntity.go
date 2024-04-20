@@ -3,7 +3,6 @@ package userDomain
 import (
 	"errors"
 	"io"
-	"path"
 	"time"
 )
 
@@ -85,30 +84,18 @@ func (u *User) FollowRequests() ([]*User, error) {
 	return (*u.userRepository).FollowRequestUserList(u)
 }
 
-func (u *User) UserIconImageUrl() string {
-	return path.Join("images", "user", u.UserName.String(), "icon.png")
-}
-
-func (u *User) UserBgImageUrl() string {
-	return path.Join("images", "user", u.UserName.String(), "background.png")
-}
-
 func (u *User) SaveIcon(file io.Reader) error {
-	objectKey := u.UserIconImageUrl()
-	return (*u.userImageRepository).SaveIcon(objectKey, file)
+	return (*u.userImageRepository).SaveIcon(u, file)
 }
 
 func (u *User) SaveBgImage(file io.Reader) error {
-	objectKey := u.UserBgImageUrl()
-	return (*u.userImageRepository).SaveBgImage(objectKey, file)
+	return (*u.userImageRepository).SaveBgImage(u, file)
 }
 
 func (u *User) DeleteIcon() error {
-	objectKey := u.UserIconImageUrl()
-	return (*u.userImageRepository).Delete(objectKey)
+	return (*u.userImageRepository).DeleteIcon(u)
 }
 
 func (u *User) DeleteBgImage() error {
-	objectKey := u.UserBgImageUrl()
-	return (*u.userImageRepository).Delete(objectKey)
+	return (*u.userImageRepository).DeleteBgImage(u)
 }

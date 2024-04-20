@@ -19,9 +19,9 @@ type IUserRepository interface {
 }
 
 type IUserImageRepository interface {
-	SaveIcon(objectKey string, file io.Reader) error
-	SaveBgImage(objectKey string, file io.Reader) error
-	SaveBinary(objectKey string, fileBytes []byte) error
-	Delete(objectKey string) error
-	Move(sourceObjectKey string, targetObjectKey string) error
+	SaveIcon(user *User, file io.Reader) error
+	SaveBgImage(user *User, file io.Reader) error
+	DeleteIcon(user *User) error
+	DeleteBgImage(user *User) error
+	MoveResources(sourceUser *User, targetUser *User) error
 }
