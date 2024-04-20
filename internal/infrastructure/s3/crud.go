@@ -4,44 +4,26 @@ import (
 	"bytes"
 	"context"
 	"io"
+	"path"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/n4mlz/sns-backend/internal/domain/userDomain"
 )
 
-func (app *S3App) SaveIcon(objectKey string, file io.Reader) error {
-	fileBytes, err := fotmatImageForIcon(file)
-	if err != nil {
-		return err
-	}
-
-	err = app.SaveBinary(objectKey, fileBytes)
-	if err != nil {
-		return err
-	}
-
-	return nil
+func userIconImageUrl(user *userDomain.User) string {
+	return path.Join("images", "user", user.UserName.String(), "icon.png")
 }
 
-func (app *S3App) SaveBgImage(objectKey string, file io.Reader) error {
-	fileBytes, err := fotmatImageForBgImage(file)
-	if err != nil {
-		return err
-	}
-
-	err = app.SaveBinary(objectKey, fileBytes)
-	if err != nil {
-		return err
-	}
-
-	return nil
+func userBgImageUrl(user *userDomain.User) string {
+	return path.Join("images", "user", user.UserName.String(), "background.png")
 }
 
-func (app *S3App) SaveBinary(objectKey string, fileBytes []byte) error {
+func (app *S3App) saveObject(objectKey string, object []byte) error {
 	_, err := app.Client.PutObject(context.TODO(), &s3.PutObjectInput{
 		Bucket: aws.String(app.BucketName),
 		Key:    aws.String(objectKey),
-		Body:   bytes.NewReader(fileBytes),
+		Body:   bytes.NewReader(object),
 	})
 	if err != nil {
 		return err
@@ -50,7 +32,7 @@ func (app *S3App) SaveBinary(objectKey string, fileBytes []byte) error {
 	return nil
 }
 
-func (app *S3App) Delete(objectKey string) error {
+func (app *S3App) deleteObject(objectKey string) error {
 	_, err := app.Client.DeleteObject(context.TODO(), &s3.DeleteObjectInput{
 		Bucket: aws.String(app.BucketName),
 		Key:    aws.String(objectKey),
@@ -62,7 +44,7 @@ func (app *S3App) Delete(objectKey string) error {
 	return nil
 }
 
-func (app *S3App) Move(sourceObjectKey string, targetObjectKey string) error {
+func (app *S3App) moveObject(sourceObjectKey string, targetObjectKey string) error {
 	result, err := app.Client.GetObject(context.TODO(), &s3.GetObjectInput{
 		Bucket: aws.String(app.BucketName),
 		Key:    aws.String(sourceObjectKey),
@@ -78,12 +60,76 @@ func (app *S3App) Move(sourceObjectKey string, targetObjectKey string) error {
 		return err
 	}
 
-	err = app.SaveBinary(targetObjectKey, buf)
+	err = app.saveObject(targetObjectKey, buf)
 	if err != nil {
 		return err
 	}
 
-	err = app.Delete(sourceObjectKey)
+	err = app.deleteObject(sourceObjectKey)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (app *S3App) SaveIcon(user *userDomain.User, file io.Reader) error {
+	fileBytes, err := fotmatImageForIcon(file)
+	if err != nil {
+		return err
+	}
+
+	objectKey := userIconImageUrl(user)
+
+	err = app.saveObject(objectKey, fileBytes)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (app *S3App) SaveBgImage(user *userDomain.User, file io.Reader) error {
+	fileBytes, err := fotmatImageForBgImage(file)
+	if err != nil {
+		return err
+	}
+
+	objectKey := userBgImageUrl(user)
+
+	err = app.saveObject(objectKey, fileBytes)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (app *S3App) DeleteIcon(user *userDomain.User) error {
+	objectKey := userIconImageUrl(user)
+
+	if err := app.deleteObject(objectKey); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (app *S3App) DeleteBgImage(user *userDomain.User) error {
+	objectKey := userBgImageUrl(user)
+
+	if err := app.deleteObject(objectKey); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (app *S3App) MoveResources(sourceUser *userDomain.User, targetUser *userDomain.User) error {
+	err := app.moveObject(userIconImageUrl(sourceUser), userIconImageUrl(targetUser))
+	if err != nil {
+		return err
+	}
+
+	err = app.moveObject(userBgImageUrl(sourceUser), userBgImageUrl(targetUser))
 	if err != nil {
 		return err
 	}

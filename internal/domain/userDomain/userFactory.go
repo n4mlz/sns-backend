@@ -40,14 +40,11 @@ func (uf *UserFactory) SaveUserToRepository(userId UserId, userName UserName, di
 			return nil, err
 		}
 
-		err = (*uf.userImageRepository).Move(oldUser.UserIconImageUrl(), user.UserIconImageUrl())
-		if err != nil {
-			return nil, err
-		}
-
-		err = (*uf.userImageRepository).Move(oldUser.UserBgImageUrl(), user.UserBgImageUrl())
-		if err != nil {
-			return nil, err
+		if oldUser.UserName != userName {
+			err = (*uf.userImageRepository).MoveResources(oldUser, user)
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
 
