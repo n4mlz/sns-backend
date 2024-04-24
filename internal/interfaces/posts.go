@@ -14,6 +14,13 @@ func setPostsRoutesFrom(r *gin.RouterGroup) {
 		posts.PUT("/unlike", usecases.UnlikePost)
 		posts.GET("/timeline", usecases.Timeline)
 
+		post := posts.Group("/:postId")
+		{
+			post.GET("", usecases.GetPost)
+			post.DELETE("", usecases.DeletePost)
+			post.GET("/likes", usecases.Likes)
+		}
+
 		comments := posts.Group("/comments")
 		{
 			comments.POST("", usecases.CreateComment)
@@ -24,13 +31,6 @@ func setPostsRoutesFrom(r *gin.RouterGroup) {
 		{
 			replies.POST("", usecases.CreateReply)
 			replies.DELETE("/:replyId", usecases.DeleteReply)
-		}
-
-		post := posts.Group("/:postId")
-		{
-			post.GET("", usecases.GetPost)
-			post.DELETE("", usecases.DeletePost)
-			post.GET("/likes", usecases.Likes)
 		}
 	}
 }

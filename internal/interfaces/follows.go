@@ -11,7 +11,7 @@ func setFollowsRoutesFrom(r *gin.RouterGroup) {
 	{
 		follows.PUT("/follow", usecases.FollowUser)
 		follows.PUT("/unfollow", usecases.UnfollowUser)
-		follows.GET("/requested", usecases.RequestedUsers)
+		follows.GET("/requests", usecases.RequestedUsers)
 		follows.PUT("/reject", usecases.RejectUser)
 	}
 }
