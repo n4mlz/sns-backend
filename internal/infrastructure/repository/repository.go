@@ -18,6 +18,7 @@ var (
 )
 
 func NewRepository() (db *gorm.DB, err error) {
+	// TODO: 以下の Sprintf の中身も環境変数で管理する
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", dbUser, password, host, port, dbName)
 	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 

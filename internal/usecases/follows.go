@@ -42,9 +42,11 @@ func FollowUser(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"followingUserName": request.UserName,
-	})
+	response := UserNameDto{
+		UserName: targetUser.UserName.String(),
+	}
+
+	ctx.JSON(http.StatusOK, response)
 }
 
 func UnfollowUser(ctx *gin.Context) {
@@ -82,9 +84,11 @@ func UnfollowUser(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"unfollowingUserName": request.UserName,
-	})
+	response := UserNameDto{
+		UserName: targetUser.UserName.String(),
+	}
+
+	ctx.JSON(http.StatusOK, response)
 }
 
 func RejectUser(ctx *gin.Context) {
@@ -127,9 +131,11 @@ func RejectUser(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"rejectedUserName": request.UserName,
-	})
+	response := UserNameDto{
+		UserName: targetUser.UserName.String(),
+	}
+
+	ctx.JSON(http.StatusOK, response)
 }
 
 func RequestedUsers(ctx *gin.Context) {

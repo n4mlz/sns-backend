@@ -70,7 +70,7 @@ func DeletePost(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{})
+	ctx.JSON(http.StatusNoContent, gin.H{})
 }
 
 func LikePost(ctx *gin.Context) {
@@ -330,7 +330,7 @@ func DeleteComment(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{})
+	ctx.JSON(http.StatusNoContent, gin.H{})
 }
 
 func CreateReply(ctx *gin.Context) {
@@ -400,7 +400,7 @@ func DeleteReply(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{})
+	ctx.JSON(http.StatusNoContent, gin.H{})
 }
 
 func Timeline(ctx *gin.Context) {

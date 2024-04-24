@@ -63,7 +63,7 @@ func SaveIcon(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "success"})
+	ctx.JSON(http.StatusNoContent, gin.H{})
 }
 
 func SaveBgImage(ctx *gin.Context) {
@@ -93,5 +93,5 @@ func SaveBgImage(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "success"})
+	ctx.JSON(http.StatusNoContent, gin.H{})
 }
