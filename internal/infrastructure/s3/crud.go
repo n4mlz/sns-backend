@@ -12,11 +12,11 @@ import (
 )
 
 func userIconImageUrl(user *userDomain.User) string {
-	return path.Join("images", "user", user.UserName.String(), "icon.png")
+	return path.Join("images", "users", user.UserName.String(), "icon.png")
 }
 
 func userBgImageUrl(user *userDomain.User) string {
-	return path.Join("images", "user", user.UserName.String(), "background.png")
+	return path.Join("images", "users", user.UserName.String(), "background.png")
 }
 
 func (app *S3App) saveObject(objectKey string, object []byte) error {

@@ -7,6 +7,23 @@ import (
 	"github.com/n4mlz/sns-backend/internal/domain/userDomain"
 )
 
+func GetOwnProfile(ctx *gin.Context) {
+	userId := userDomain.UserId(ctx.GetString("userId"))
+	user, err := userDomain.Factory.GetUser(userId)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	response := ProfileDto{
+		UserName:    user.UserName.String(),
+		DisplayName: user.DisplayName.String(),
+		Biography:   user.Biography.String(),
+	}
+
+	ctx.JSON(http.StatusOK, response)
+}
+
 func SaveProfile(ctx *gin.Context) {
 	var request ProfileDto
 
