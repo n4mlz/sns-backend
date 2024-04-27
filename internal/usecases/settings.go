@@ -25,7 +25,34 @@ func GetOwnProfile(ctx *gin.Context) {
 }
 
 func SaveProfile(ctx *gin.Context) {
-	var request ProfileDto
+	var request UserSettingsDto
+
+	err := ctx.ShouldBindJSON(&request)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	userId := userDomain.UserId(ctx.GetString("userId"))
+	displayName := userDomain.DisplayName(request.DisplayName)
+	biography := userDomain.Biography(request.Biography)
+
+	user, err := userDomain.Factory.SaveUserSettingsToRepository(userId, displayName, biography)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	response := UserSettingsDto{
+		DisplayName: user.DisplayName.String(),
+		Biography:   user.Biography.String(),
+	}
+
+	ctx.JSON(http.StatusOK, response)
+}
+
+func SaveUserName(ctx *gin.Context) {
+	var request UserNameDto
 
 	err := ctx.ShouldBindJSON(&request)
 	if err != nil {
@@ -35,19 +62,16 @@ func SaveProfile(ctx *gin.Context) {
 
 	userId := userDomain.UserId(ctx.GetString("userId"))
 	userName := userDomain.UserName(request.UserName)
-	displayName := userDomain.DisplayName(request.DisplayName)
-	biography := userDomain.Biography(request.Biography)
 
-	user, err := userDomain.Factory.SaveUserToRepository(userId, userName, displayName, biography)
+	user, err := userDomain.Factory.SaveUserNameToRepository(userId, userName)
+
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	response := ProfileDto{
-		UserName:    user.UserName.String(),
-		DisplayName: user.DisplayName.String(),
-		Biography:   user.Biography.String(),
+	response := UserNameDto{
+		UserName: user.UserName.String(),
 	}
 
 	ctx.JSON(http.StatusOK, response)

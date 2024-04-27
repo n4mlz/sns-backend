@@ -13,8 +13,9 @@ func setSettingsRoutesFrom(r *gin.RouterGroup) {
 		{
 			profile.GET("", usecases.GetOwnProfile)
 			profile.PUT("", usecases.SaveProfile)
+			profile.PUT("/userName", usecases.SaveUserName)
 			profile.PUT("/icon", usecases.SaveIcon)
-			profile.PUT("/bgimage", usecases.SaveBgImage)
+			profile.PUT("/bgImage", usecases.SaveBgImage)
 		}
 	}
 }

@@ -10,6 +10,11 @@ const (
 	MAX_USERNAME_LENGTH = 16
 )
 
+const (
+	MIN_DISPLAY_NAME_LENGTH = 1
+	MAX_DISPLAY_NAME_LENGTH = 32
+)
+
 const MAX_BIOGRAPHY_LENGTH = 256
 
 const (
@@ -33,7 +38,7 @@ func (u UserName) String() string {
 }
 
 func (u UserName) IsValid() bool {
-	pattern := regexp.MustCompile(fmt.Sprintf(`^[A-Za-z0-9_]{%d,%d}$`, MIN_USERNAME_LENGTH, MAX_USERNAME_LENGTH))
+	pattern := regexp.MustCompile(fmt.Sprintf(`^[a-zA-Z0-9_]{%d,%d}$`, MIN_USERNAME_LENGTH, MAX_USERNAME_LENGTH))
 	return pattern.MatchString(u.String())
 }
 
@@ -44,7 +49,7 @@ func (d DisplayName) String() string {
 }
 
 func (d DisplayName) IsValid() bool {
-	return len(d) != 0
+	return MIN_DISPLAY_NAME_LENGTH <= len(d) && len(d) <= MAX_DISPLAY_NAME_LENGTH
 }
 
 type Biography string

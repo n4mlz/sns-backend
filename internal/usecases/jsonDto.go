@@ -11,6 +11,11 @@ type UserDisplayDto struct {
 	DisplayName string `json:"displayName"`
 }
 
+type UserSettingsDto struct {
+	DisplayName string `json:"displayName"`
+	Biography   string `json:"biography"`
+}
+
 type ProfileDto struct {
 	UserName    string `json:"userName"`
 	DisplayName string `json:"displayName"`
