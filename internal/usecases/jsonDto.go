@@ -30,6 +30,15 @@ type UserDto struct {
 	FollowingStatus string    `json:"followingStatus"`
 }
 
+type UserDetailDto struct {
+	UserName        string    `json:"userName"`
+	DisplayName     string    `json:"displayName"`
+	Biography       string    `json:"biography"`
+	CreatedAt       time.Time `json:"createdAt"`
+	Mutuals         int       `json:"mutuals"`
+	FollowingStatus string    `json:"followingStatus"`
+}
+
 type PostIdDto struct {
 	PostId string `json:"postId"`
 }

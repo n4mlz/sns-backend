@@ -24,11 +24,20 @@ func User(ctx *gin.Context) {
 		return
 	}
 
-	response := UserDto{
+	visibleUserCount, err := targetUser.GetVisibleUserCount()
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	mutualCount := visibleUserCount - 1
+
+	response := UserDetailDto{
 		UserName:        targetUser.UserName.String(),
 		DisplayName:     targetUser.DisplayName.String(),
 		Biography:       targetUser.Biography.String(),
 		CreatedAt:       targetUser.CreatedAt,
+		Mutuals:         mutualCount,
 		FollowingStatus: sourseUser.GetFollowingStatus(targetUser),
 	}
 

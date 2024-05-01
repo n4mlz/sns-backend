@@ -47,6 +47,10 @@ func (u *User) IsVisible(user *User) bool {
 	return followingStatus == OWN || followingStatus == MUTUAL
 }
 
+func (u *User) GetVisibleUserCount() (int, error) {
+	return (*u.userRepository).GetVisibleUserCount(u)
+}
+
 func (u *User) GetFollowingStatus(user *User) string {
 	if u.UserId == user.UserId {
 		return OWN

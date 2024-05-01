@@ -9,6 +9,7 @@ type IUserRepository interface {
 	FindByUserName(userName UserName) (*User, error)
 	IsExistUserId(userId UserId) bool
 	IsExistUserName(userName UserName) bool
+	GetVisibleUserCount(user *User) (int, error)
 	Follow(sourceUser *User, targetUser *User) error
 	Unfollow(sourceUser *User, targetUser *User) error
 	IsFollowing(sourceUser *User, targetUser *User) bool

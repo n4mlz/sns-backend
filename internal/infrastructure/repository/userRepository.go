@@ -84,6 +84,15 @@ func (r *UserRepository) IsExistUserName(userName userDomain.UserName) bool {
 	return count != 0
 }
 
+func (r *UserRepository) GetVisibleUserCount(user *userDomain.User) (int, error) {
+	users, err := r.VisibleUserList(user)
+	if err != nil {
+		return 0, err
+	}
+
+	return len(users), nil
+}
+
 func (r *UserRepository) Follow(sourceUser *userDomain.User, targetUser *userDomain.User) error {
 	newFollow := &model.Follow{
 		ID:              xid.New().String(),
