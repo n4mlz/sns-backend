@@ -16,6 +16,7 @@ type IPostRepository interface {
 	IsLiked(*Post, *userDomain.User) bool
 	GetLikeCount(*Post) (int, error)
 	GetLikers(*Post) ([]*userDomain.User, error)
+	GetCommentCount(*Post) (int, error)
 	CreateComment(comment *Comment) (*Comment, error)
 	DeleteComment(comment *Comment) error
 	CreateReply(reply *Reply) (*Reply, error)

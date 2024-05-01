@@ -85,7 +85,7 @@ func (uf *UserFactory) SaveUserNameToRepository(userId UserId, userName UserName
 	user, err := Factory.GetUser(userId)
 
 	if err != nil {
-		displayName = DisplayName(" ")
+		displayName = DisplayName(userName.String())
 		biography = Biography("")
 	} else {
 		displayName = user.DisplayName

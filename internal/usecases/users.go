@@ -146,10 +146,28 @@ func UserPosts(ctx *gin.Context) {
 
 	var response []PostDto
 	for _, post := range posts {
+		// TODO: fix N+1 problem
+
+		liked := post.IsLiked(sourceUser)
+
+		likeCount, err := post.GetLikeCount()
+		if err != nil {
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		commentCount, err := post.GetCommentCount()
+		if err != nil {
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
 		response = append(response, PostDto{
 			PostId:    post.PostId.String(),
 			Poster:    poster,
 			Content:   post.Content.String(),
+			Likes:     likeCount,
+			Liked:     liked,
+			Comments:  commentCount,
 			CreatedAt: post.CreatedAt,
 		})
 	}

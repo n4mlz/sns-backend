@@ -3,6 +3,7 @@ package userDomain
 import (
 	"fmt"
 	"regexp"
+	"unicode/utf8"
 )
 
 const (
@@ -49,7 +50,7 @@ func (d DisplayName) String() string {
 }
 
 func (d DisplayName) IsValid() bool {
-	return MIN_DISPLAY_NAME_LENGTH <= len(d) && len(d) <= MAX_DISPLAY_NAME_LENGTH
+	return MIN_DISPLAY_NAME_LENGTH <= utf8.RuneCountInString(d.String()) && utf8.RuneCountInString(d.String()) <= MAX_DISPLAY_NAME_LENGTH
 }
 
 type Biography string
@@ -59,5 +60,5 @@ func (b Biography) String() string {
 }
 
 func (b Biography) IsValid() bool {
-	return len(b) <= MAX_BIOGRAPHY_LENGTH
+	return utf8.RuneCountInString(b.String()) <= MAX_BIOGRAPHY_LENGTH
 }

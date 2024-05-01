@@ -76,6 +76,10 @@ func (p *Post) GetLikers(sourceUser *userDomain.User) ([]*userDomain.User, error
 	return visibleLikers, nil
 }
 
+func (p *Post) GetCommentCount() (int, error) {
+	return (*p.PostRepository).GetCommentCount(p)
+}
+
 func (p *Post) GetComments(sourceUser *userDomain.User) ([]*Comment, error) {
 	return Factory.GetComments(sourceUser, p)
 }
