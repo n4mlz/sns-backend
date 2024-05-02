@@ -99,20 +99,20 @@ func MutualFollow(ctx *gin.Context) {
 
 		if user.UserId == sourceUser.UserId {
 			followingStatus = userDomain.OWN
-		}
-
-		isFollowing := followingSet.Contains(user.UserId)
-
-		isFollowed := followerSet.Contains(user.UserId)
-
-		if isFollowing && isFollowed {
-			followingStatus = userDomain.MUTUAL
-		} else if isFollowing {
-			followingStatus = userDomain.FOLLOWING
-		} else if isFollowed {
-			followingStatus = userDomain.FOLLOWED
 		} else {
-			followingStatus = userDomain.NONE
+			isFollowing := followingSet.Contains(user.UserId)
+
+			isFollowed := followerSet.Contains(user.UserId)
+
+			if isFollowing && isFollowed {
+				followingStatus = userDomain.MUTUAL
+			} else if isFollowing {
+				followingStatus = userDomain.FOLLOWING
+			} else if isFollowed {
+				followingStatus = userDomain.FOLLOWED
+			} else {
+				followingStatus = userDomain.NONE
+			}
 		}
 
 		response = append(response, UserDto{
