@@ -195,6 +195,11 @@ func (r *PostRepository) GetLikers(post *postDomain.Post) ([]*userDomain.User, e
 	return userDomain.Factory.GetUsers(likerUserIdList)
 }
 
+func (r *PostRepository) GetCommentCount(post *postDomain.Post) (int, error) {
+	count, err := query.Comment.WithContext(context.Background()).Where(query.Comment.PostID.Eq(post.PostId.String())).Count()
+	return int(count), err
+}
+
 func (r *PostRepository) CreateComment(comment *postDomain.Comment) (*postDomain.Comment, error) {
 	gormComment := toGormComment(comment)
 	gormComment.ID = xid.New().String()

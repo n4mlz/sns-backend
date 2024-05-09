@@ -24,11 +24,20 @@ func User(ctx *gin.Context) {
 		return
 	}
 
-	response := UserDto{
+	visibleUserCount, err := targetUser.GetVisibleUserCount()
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	mutualCount := visibleUserCount - 1
+
+	response := UserDetailDto{
 		UserName:        targetUser.UserName.String(),
 		DisplayName:     targetUser.DisplayName.String(),
 		Biography:       targetUser.Biography.String(),
 		CreatedAt:       targetUser.CreatedAt,
+		Mutuals:         mutualCount,
 		FollowingStatus: sourseUser.GetFollowingStatus(targetUser),
 	}
 
@@ -90,20 +99,20 @@ func MutualFollow(ctx *gin.Context) {
 
 		if user.UserId == sourceUser.UserId {
 			followingStatus = userDomain.OWN
-		}
-
-		isFollowing := followingSet.Contains(user.UserId)
-
-		isFollowed := followerSet.Contains(user.UserId)
-
-		if isFollowing && isFollowed {
-			followingStatus = userDomain.MUTUAL
-		} else if isFollowing {
-			followingStatus = userDomain.FOLLOWING
-		} else if isFollowed {
-			followingStatus = userDomain.FOLLOWED
 		} else {
-			followingStatus = userDomain.NONE
+			isFollowing := followingSet.Contains(user.UserId)
+
+			isFollowed := followerSet.Contains(user.UserId)
+
+			if isFollowing && isFollowed {
+				followingStatus = userDomain.MUTUAL
+			} else if isFollowing {
+				followingStatus = userDomain.FOLLOWING
+			} else if isFollowed {
+				followingStatus = userDomain.FOLLOWED
+			} else {
+				followingStatus = userDomain.NONE
+			}
 		}
 
 		response = append(response, UserDto{
@@ -146,10 +155,28 @@ func UserPosts(ctx *gin.Context) {
 
 	var response []PostDto
 	for _, post := range posts {
+		// TODO: fix N+1 problem
+
+		liked := post.IsLiked(sourceUser)
+
+		likeCount, err := post.GetLikeCount()
+		if err != nil {
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		commentCount, err := post.GetCommentCount()
+		if err != nil {
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
 		response = append(response, PostDto{
 			PostId:    post.PostId.String(),
 			Poster:    poster,
 			Content:   post.Content.String(),
+			Likes:     likeCount,
+			Liked:     liked,
+			Comments:  commentCount,
 			CreatedAt: post.CreatedAt,
 		})
 	}

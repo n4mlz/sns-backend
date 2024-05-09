@@ -9,8 +9,13 @@ func setSettingsRoutesFrom(r *gin.RouterGroup) {
 	settings := r.Group("/settings")
 	settings.Use(authMiddleware())
 	{
-		settings.PUT("", usecases.SaveProfile)
-		settings.PUT("/icon", usecases.SaveIcon)
-		settings.PUT("/bgimage", usecases.SaveBgImage)
+		profile := settings.Group("/profile")
+		{
+			profile.GET("", usecases.GetOwnProfile)
+			profile.PUT("", usecases.SaveProfile)
+			profile.PUT("/userName", usecases.SaveUserName)
+			profile.PUT("/icon", usecases.SaveIcon)
+			profile.PUT("/bgImage", usecases.SaveBgImage)
+		}
 	}
 }

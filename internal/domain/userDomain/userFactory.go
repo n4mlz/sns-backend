@@ -34,6 +34,17 @@ func (uf *UserFactory) SaveUserToRepository(userId UserId, userName UserName, di
 		Biography:           biography,
 	}
 
+	if (*uf.userRepository).IsExistUserName(userName) {
+		oldUser, err := (*uf.userRepository).FindById(userId)
+		if err != nil {
+			return nil, err
+		}
+
+		if oldUser.UserName != userName {
+			return nil, errors.New("user name is already used")
+		}
+	}
+
 	if (*uf.userRepository).IsExistUserId(userId) && !(*uf.userRepository).IsExistUserName(userName) {
 		oldUser, err := (*uf.userRepository).FindById(userId)
 		if err != nil {
@@ -61,6 +72,36 @@ func (uf *UserFactory) SaveUserToRepository(userId UserId, userName UserName, di
 	}
 
 	return user, nil
+}
+
+func (uf *UserFactory) SaveUserNameToRepository(userId UserId, userName UserName) (*User, error) {
+	if !userName.IsValid() {
+		return nil, errors.New("invalid user name")
+	}
+
+	var displayName DisplayName
+	var biography Biography
+
+	user, err := Factory.GetUser(userId)
+
+	if err != nil {
+		displayName = DisplayName(userName.String())
+		biography = Biography("")
+	} else {
+		displayName = user.DisplayName
+		biography = user.Biography
+	}
+
+	return uf.SaveUserToRepository(userId, userName, displayName, biography)
+}
+
+func (uf *UserFactory) SaveUserSettingsToRepository(userId UserId, displayName DisplayName, biography Biography) (*User, error) {
+	user, err := Factory.GetUser(userId)
+	if err != nil {
+		return nil, err
+	}
+
+	return uf.SaveUserToRepository(userId, user.UserName, displayName, biography)
 }
 
 func (uf *UserFactory) GetUser(userId UserId) (*User, error) {

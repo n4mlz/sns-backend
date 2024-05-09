@@ -11,6 +11,11 @@ type UserDisplayDto struct {
 	DisplayName string `json:"displayName"`
 }
 
+type UserSettingsDto struct {
+	DisplayName string `json:"displayName"`
+	Biography   string `json:"biography"`
+}
+
 type ProfileDto struct {
 	UserName    string `json:"userName"`
 	DisplayName string `json:"displayName"`
@@ -22,6 +27,15 @@ type UserDto struct {
 	DisplayName     string    `json:"displayName"`
 	Biography       string    `json:"biography"`
 	CreatedAt       time.Time `json:"createdAt"`
+	FollowingStatus string    `json:"followingStatus"`
+}
+
+type UserDetailDto struct {
+	UserName        string    `json:"userName"`
+	DisplayName     string    `json:"displayName"`
+	Biography       string    `json:"biography"`
+	CreatedAt       time.Time `json:"createdAt"`
+	Mutuals         int       `json:"mutuals"`
 	FollowingStatus string    `json:"followingStatus"`
 }
 

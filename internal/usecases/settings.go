@@ -7,21 +7,9 @@ import (
 	"github.com/n4mlz/sns-backend/internal/domain/userDomain"
 )
 
-func SaveProfile(ctx *gin.Context) {
-	var request ProfileDto
-
-	err := ctx.ShouldBindJSON(&request)
-	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
+func GetOwnProfile(ctx *gin.Context) {
 	userId := userDomain.UserId(ctx.GetString("userId"))
-	userName := userDomain.UserName(request.UserName)
-	displayName := userDomain.DisplayName(request.DisplayName)
-	biography := userDomain.Biography(request.Biography)
-
-	user, err := userDomain.Factory.SaveUserToRepository(userId, userName, displayName, biography)
+	user, err := userDomain.Factory.GetUser(userId)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -31,6 +19,59 @@ func SaveProfile(ctx *gin.Context) {
 		UserName:    user.UserName.String(),
 		DisplayName: user.DisplayName.String(),
 		Biography:   user.Biography.String(),
+	}
+
+	ctx.JSON(http.StatusOK, response)
+}
+
+func SaveProfile(ctx *gin.Context) {
+	var request UserSettingsDto
+
+	err := ctx.ShouldBindJSON(&request)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	userId := userDomain.UserId(ctx.GetString("userId"))
+	displayName := userDomain.DisplayName(request.DisplayName)
+	biography := userDomain.Biography(request.Biography)
+
+	user, err := userDomain.Factory.SaveUserSettingsToRepository(userId, displayName, biography)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	response := UserSettingsDto{
+		DisplayName: user.DisplayName.String(),
+		Biography:   user.Biography.String(),
+	}
+
+	ctx.JSON(http.StatusOK, response)
+}
+
+func SaveUserName(ctx *gin.Context) {
+	var request UserNameDto
+
+	err := ctx.ShouldBindJSON(&request)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	userId := userDomain.UserId(ctx.GetString("userId"))
+	userName := userDomain.UserName(request.UserName)
+
+	user, err := userDomain.Factory.SaveUserNameToRepository(userId, userName)
+
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	response := UserNameDto{
+		UserName: user.UserName.String(),
 	}
 
 	ctx.JSON(http.StatusOK, response)
