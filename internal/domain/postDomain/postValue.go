@@ -1,5 +1,7 @@
 package postDomain
 
+import "unicode/utf8"
+
 const MAX_CONTENT_LENGTH = 256
 
 type PostId string
@@ -15,7 +17,7 @@ func (c Content) String() string {
 }
 
 func (c Content) IsValid() bool {
-	return len(c) <= MAX_CONTENT_LENGTH
+	return utf8.RuneCountInString(c.String()) <= MAX_CONTENT_LENGTH
 }
 
 type CommentId string
