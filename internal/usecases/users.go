@@ -11,7 +11,7 @@ import (
 
 func User(ctx *gin.Context) {
 	sourceUserId := userDomain.UserId(ctx.GetString("userId"))
-	sourseUser, err := userDomain.Factory.GetUser(sourceUserId)
+	sourceUser, err := userDomain.Factory.GetUser(sourceUserId)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -38,7 +38,7 @@ func User(ctx *gin.Context) {
 		Biography:       targetUser.Biography.String(),
 		CreatedAt:       targetUser.CreatedAt,
 		Mutuals:         mutualCount,
-		FollowingStatus: sourseUser.GetFollowingStatus(targetUser),
+		FollowingStatus: sourceUser.GetFollowingStatus(targetUser),
 	}
 
 	ctx.JSON(http.StatusOK, response)
