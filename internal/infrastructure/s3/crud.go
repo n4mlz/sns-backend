@@ -19,11 +19,12 @@ func userBgImageUrl(user *userDomain.User) string {
 	return path.Join("images", "users", user.UserName.String(), "background.png")
 }
 
-func (app *S3App) saveObject(objectKey string, object []byte) error {
+func (app *S3App) saveObject(objectKey string, object []byte, ContentType string) error {
 	_, err := app.Client.PutObject(context.TODO(), &s3.PutObjectInput{
-		Bucket: aws.String(app.BucketName),
-		Key:    aws.String(objectKey),
-		Body:   bytes.NewReader(object),
+		Bucket:      aws.String(app.BucketName),
+		Key:         aws.String(objectKey),
+		Body:        bytes.NewReader(object),
+		ContentType: aws.String(ContentType),
 	})
 	if err != nil {
 		return err
@@ -60,7 +61,7 @@ func (app *S3App) moveObject(sourceObjectKey string, targetObjectKey string) err
 		return err
 	}
 
-	err = app.saveObject(targetObjectKey, buf)
+	err = app.saveObject(targetObjectKey, buf, *result.ContentType)
 	if err != nil {
 		return err
 	}
@@ -81,7 +82,7 @@ func (app *S3App) SaveIcon(user *userDomain.User, file io.Reader) error {
 
 	objectKey := userIconImageUrl(user)
 
-	err = app.saveObject(objectKey, fileBytes)
+	err = app.saveObject(objectKey, fileBytes, "image/png")
 	if err != nil {
 		return err
 	}
@@ -97,7 +98,7 @@ func (app *S3App) SaveBgImage(user *userDomain.User, file io.Reader) error {
 
 	objectKey := userBgImageUrl(user)
 
-	err = app.saveObject(objectKey, fileBytes)
+	err = app.saveObject(objectKey, fileBytes, "image/png")
 	if err != nil {
 		return err
 	}
