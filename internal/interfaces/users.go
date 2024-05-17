@@ -11,9 +11,17 @@ func setUsersRoutesFrom(r *gin.RouterGroup) {
 	{
 		user := users.Group("/:userName")
 		{
+			user.GET("/posts", usecases.UserPosts)
+		}
+	}
+
+	usersNoAuth := r.Group("/users")
+	usersNoAuth.Use(authMiddlewareNoAbort())
+	{
+		user := usersNoAuth.Group("/:userName")
+		{
 			user.GET("", usecases.User)
 			user.GET("/mutuals", usecases.MutualFollow)
-			user.GET("/posts", usecases.UserPosts)
 		}
 	}
 }
