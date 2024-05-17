@@ -34,6 +34,8 @@ func CreatePost(ctx *gin.Context) {
 	poster := UserDisplayDto{
 		UserName:    user.UserName.String(),
 		DisplayName: user.DisplayName.String(),
+		IconUrl:     user.IconUrl.String(),
+		BgImageUrl:  user.BgImageUrl.String(),
 	}
 
 	response := PostDto{
@@ -179,6 +181,8 @@ func Likes(ctx *gin.Context) {
 			Biography:       liker.Biography.String(),
 			CreatedAt:       liker.CreatedAt,
 			FollowingStatus: followingStatus,
+			IconUrl:         liker.IconUrl.String(),
+			BgImageUrl:      liker.BgImageUrl.String(),
 		})
 	}
 
@@ -210,6 +214,8 @@ func GetPost(ctx *gin.Context) {
 	poster := UserDisplayDto{
 		UserName:    post.Poster.UserName.String(),
 		DisplayName: post.Poster.DisplayName.String(),
+		IconUrl:     post.Poster.IconUrl.String(),
+		BgImageUrl:  post.Poster.BgImageUrl.String(),
 	}
 
 	commentObjects, err := post.GetComments(user)
@@ -223,6 +229,8 @@ func GetPost(ctx *gin.Context) {
 		commenter := UserDisplayDto{
 			UserName:    comment.Commenter.UserName.String(),
 			DisplayName: comment.Commenter.DisplayName.String(),
+			IconUrl:     comment.Commenter.IconUrl.String(),
+			BgImageUrl:  comment.Commenter.BgImageUrl.String(),
 		}
 
 		var replies []ReplyDto
@@ -230,6 +238,8 @@ func GetPost(ctx *gin.Context) {
 			replier := UserDisplayDto{
 				UserName:    reply.Replier.UserName.String(),
 				DisplayName: reply.Replier.DisplayName.String(),
+				IconUrl:     reply.Replier.IconUrl.String(),
+				BgImageUrl:  reply.Replier.BgImageUrl.String(),
 			}
 
 			replies = append(replies, ReplyDto{
@@ -296,6 +306,8 @@ func CreateComment(ctx *gin.Context) {
 	commenter := UserDisplayDto{
 		UserName:    user.UserName.String(),
 		DisplayName: user.DisplayName.String(),
+		IconUrl:     user.IconUrl.String(),
+		BgImageUrl:  user.BgImageUrl.String(),
 	}
 
 	response := CommentDto{
@@ -367,6 +379,8 @@ func CreateReply(ctx *gin.Context) {
 	replier := UserDisplayDto{
 		UserName:    user.UserName.String(),
 		DisplayName: user.DisplayName.String(),
+		IconUrl:     user.IconUrl.String(),
+		BgImageUrl:  user.BgImageUrl.String(),
 	}
 
 	response := ReplyDto{
@@ -436,6 +450,8 @@ func Timeline(ctx *gin.Context) {
 		poster := UserDisplayDto{
 			UserName:    post.Poster.UserName.String(),
 			DisplayName: post.Poster.DisplayName.String(),
+			IconUrl:     post.Poster.IconUrl.String(),
+			BgImageUrl:  post.Poster.BgImageUrl.String(),
 		}
 
 		response = append(response, PostDto{

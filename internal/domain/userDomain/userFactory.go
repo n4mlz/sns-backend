@@ -20,7 +20,7 @@ func SetDefaultUserFactory(userFactory *UserFactory) {
 	Factory = userFactory
 }
 
-func (uf *UserFactory) SaveUserToRepository(userId UserId, userName UserName, displayName DisplayName, biography Biography) (*User, error) {
+func (uf *UserFactory) SaveUserToRepository(userId UserId, userName UserName, displayName DisplayName, biography Biography, iconUrl ImageUrl, bgImageUrl ImageUrl) (*User, error) {
 	if !userName.IsValid() || !displayName.IsValid() || !biography.IsValid() {
 		return nil, errors.New("invalid profile")
 	}
@@ -32,6 +32,8 @@ func (uf *UserFactory) SaveUserToRepository(userId UserId, userName UserName, di
 		UserName:            userName,
 		DisplayName:         displayName,
 		Biography:           biography,
+		IconUrl:             iconUrl,
+		BgImageUrl:          bgImageUrl,
 	}
 
 	if (*uf.userRepository).IsExistUserName(userName) {
@@ -52,7 +54,7 @@ func (uf *UserFactory) SaveUserToRepository(userId UserId, userName UserName, di
 		}
 
 		if oldUser.UserName != userName {
-			err = (*uf.userImageRepository).MoveResources(oldUser, user)
+			user.IconUrl, user.BgImageUrl, err = (*uf.userImageRepository).MoveResources(oldUser, user)
 			if err != nil {
 				return nil, err
 			}
@@ -81,18 +83,24 @@ func (uf *UserFactory) SaveUserNameToRepository(userId UserId, userName UserName
 
 	var displayName DisplayName
 	var biography Biography
+	var iconUrl ImageUrl
+	var bgImageUrl ImageUrl
 
 	user, err := Factory.GetUser(userId)
 
 	if err != nil {
 		displayName = DisplayName(userName.String())
 		biography = Biography("")
+		iconUrl = ""
+		bgImageUrl = ""
 	} else {
 		displayName = user.DisplayName
 		biography = user.Biography
+		iconUrl = user.IconUrl
+		bgImageUrl = user.BgImageUrl
 	}
 
-	return uf.SaveUserToRepository(userId, userName, displayName, biography)
+	return uf.SaveUserToRepository(userId, userName, displayName, biography, iconUrl, bgImageUrl)
 }
 
 func (uf *UserFactory) SaveUserSettingsToRepository(userId UserId, displayName DisplayName, biography Biography) (*User, error) {
@@ -101,7 +109,7 @@ func (uf *UserFactory) SaveUserSettingsToRepository(userId UserId, displayName D
 		return nil, err
 	}
 
-	return uf.SaveUserToRepository(userId, user.UserName, displayName, biography)
+	return uf.SaveUserToRepository(userId, user.UserName, displayName, biography, user.IconUrl, user.BgImageUrl)
 }
 
 func (uf *UserFactory) GetUser(userId UserId) (*User, error) {

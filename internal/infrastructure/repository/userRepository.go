@@ -18,6 +18,8 @@ func toGormUser(user *userDomain.User) *model.User {
 		UserName:    user.UserName.String(),
 		DisplayName: user.DisplayName.String(),
 		Biography:   user.Biography.String(),
+		IconURL:     user.IconUrl.String(),
+		BgimageURL:  user.BgImageUrl.String(),
 		CreatedAt:   user.CreatedAt,
 	}
 }
@@ -28,6 +30,8 @@ func toUser(gormUser *model.User) *userDomain.User {
 		UserName:    userDomain.UserName(gormUser.UserName),
 		DisplayName: userDomain.DisplayName(gormUser.DisplayName),
 		Biography:   userDomain.Biography(gormUser.Biography),
+		IconUrl:     userDomain.ImageUrl(gormUser.IconURL),
+		BgImageUrl:  userDomain.ImageUrl(gormUser.BgimageURL),
 		CreatedAt:   gormUser.CreatedAt,
 	}
 }

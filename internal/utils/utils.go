@@ -1,5 +1,7 @@
 package utils
 
+import "net/url"
+
 type Set map[interface{}]struct{}
 
 func NewSet() *Set {
@@ -20,4 +22,9 @@ func (s Set) Delete(key interface{}) {
 func (s Set) Contains(key interface{}) bool {
 	_, ok := s[key]
 	return ok
+}
+
+func IsUrl(str string) bool {
+	u, err := url.Parse(str)
+	return err == nil && u.Scheme != "" && u.Host != ""
 }

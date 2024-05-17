@@ -160,6 +160,8 @@ func RequestedUsers(ctx *gin.Context) {
 			Biography:       followRequestUser.Biography.String(),
 			CreatedAt:       followRequestUser.CreatedAt,
 			FollowingStatus: userDomain.FOLLOWED,
+			IconUrl:         followRequestUser.IconUrl.String(),
+			BgImageUrl:      followRequestUser.BgImageUrl.String(),
 		})
 	}
 

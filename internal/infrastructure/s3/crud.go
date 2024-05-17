@@ -3,20 +3,41 @@ package s3
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"io"
+	"net/url"
 	"path"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/n4mlz/sns-backend/internal/domain/userDomain"
+	"github.com/rs/xid"
 )
 
-func userIconImageUrl(user *userDomain.User) string {
-	return path.Join("images", "users", user.UserName.String(), "icon.png")
+func generateIconObjectKey(user *userDomain.User) string {
+	return path.Join("images", "users", user.UserName.String(), fmt.Sprintf("icon_%s.png", xid.New().String()))
 }
 
-func userBgImageUrl(user *userDomain.User) string {
-	return path.Join("images", "users", user.UserName.String(), "background.png")
+func generateBgImageObjectKey(user *userDomain.User) string {
+	return path.Join("images", "users", user.UserName.String(), fmt.Sprintf("background_%s.png", xid.New().String()))
+}
+
+func objectKeyToUrl(objectKey string) string {
+	url, err := url.JoinPath(RESOURCE_URL, objectKey)
+	if err != nil {
+		return ""
+	}
+	return url
+}
+
+func urlToObjectKey(Url string) string {
+	u, err := url.Parse(Url)
+	if err != nil {
+		return ""
+	}
+
+	objectKey := u.Path
+	return objectKey[1:]
 }
 
 func (app *S3App) saveObject(objectKey string, object []byte, ContentType string) error {
@@ -74,40 +95,54 @@ func (app *S3App) moveObject(sourceObjectKey string, targetObjectKey string) err
 	return nil
 }
 
-func (app *S3App) SaveIcon(user *userDomain.User, file io.Reader) error {
+func (app *S3App) SaveIcon(user *userDomain.User, file io.Reader) (userDomain.ImageUrl, error) {
 	fileBytes, err := fotmatImageForIcon(file)
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	objectKey := userIconImageUrl(user)
+	err = app.DeleteIcon(user)
+	if err != nil {
+		return "", err
+	}
+
+	objectKey := generateIconObjectKey(user)
 
 	err = app.saveObject(objectKey, fileBytes, "image/png")
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	return nil
+	return userDomain.ImageUrl(objectKeyToUrl(objectKey)), nil
 }
 
-func (app *S3App) SaveBgImage(user *userDomain.User, file io.Reader) error {
+func (app *S3App) SaveBgImage(user *userDomain.User, file io.Reader) (userDomain.ImageUrl, error) {
 	fileBytes, err := fotmatImageForBgImage(file)
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	objectKey := userBgImageUrl(user)
+	err = app.DeleteBgImage(user)
+	if err != nil {
+		return "", err
+	}
+
+	objectKey := generateBgImageObjectKey(user)
 
 	err = app.saveObject(objectKey, fileBytes, "image/png")
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	return nil
+	return userDomain.ImageUrl(objectKeyToUrl(objectKey)), nil
 }
 
 func (app *S3App) DeleteIcon(user *userDomain.User) error {
-	objectKey := userIconImageUrl(user)
+	if user.IconUrl == "" {
+		return nil
+	}
+
+	objectKey := urlToObjectKey(user.IconUrl.String())
 
 	if err := app.deleteObject(objectKey); err != nil {
 		return err
@@ -116,7 +151,11 @@ func (app *S3App) DeleteIcon(user *userDomain.User) error {
 }
 
 func (app *S3App) DeleteBgImage(user *userDomain.User) error {
-	objectKey := userBgImageUrl(user)
+	if user.BgImageUrl == "" {
+		return nil
+	}
+
+	objectKey := urlToObjectKey(user.BgImageUrl.String())
 
 	if err := app.deleteObject(objectKey); err != nil {
 		return err
@@ -124,16 +163,19 @@ func (app *S3App) DeleteBgImage(user *userDomain.User) error {
 	return nil
 }
 
-func (app *S3App) MoveResources(sourceUser *userDomain.User, targetUser *userDomain.User) error {
-	err := app.moveObject(userIconImageUrl(sourceUser), userIconImageUrl(targetUser))
+func (app *S3App) MoveResources(sourceUser *userDomain.User, targetUser *userDomain.User) (userDomain.ImageUrl, userDomain.ImageUrl, error) {
+	iconObjectKey := generateIconObjectKey(targetUser)
+	bgImageObjectKey := generateBgImageObjectKey(targetUser)
+
+	err := app.moveObject(urlToObjectKey(sourceUser.IconUrl.String()), iconObjectKey)
 	if err != nil {
-		return err
+		return "", "", err
 	}
 
-	err = app.moveObject(userBgImageUrl(sourceUser), userBgImageUrl(targetUser))
+	err = app.moveObject(urlToObjectKey(sourceUser.BgImageUrl.String()), bgImageObjectKey)
 	if err != nil {
-		return err
+		return "", "", err
 	}
 
-	return nil
+	return userDomain.ImageUrl(objectKeyToUrl(iconObjectKey)), userDomain.ImageUrl(objectKeyToUrl(bgImageObjectKey)), nil
 }
