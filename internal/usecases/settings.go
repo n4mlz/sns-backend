@@ -19,6 +19,8 @@ func GetOwnProfile(ctx *gin.Context) {
 		UserName:    user.UserName.String(),
 		DisplayName: user.DisplayName.String(),
 		Biography:   user.Biography.String(),
+		IconUrl:     user.IconUrl.String(),
+		BgImageUrl:  user.BgImageUrl.String(),
 	}
 
 	ctx.JSON(http.StatusOK, response)
@@ -98,13 +100,17 @@ func SaveIcon(ctx *gin.Context) {
 	}
 	defer img.Close()
 
-	err = user.SaveIcon(img)
+	iconUrl, err := user.SaveIcon(img)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusNoContent, gin.H{})
+	response := UrlDto{
+		Url: iconUrl.String(),
+	}
+
+	ctx.JSON(http.StatusNoContent, response)
 }
 
 func SaveBgImage(ctx *gin.Context) {
@@ -128,11 +134,15 @@ func SaveBgImage(ctx *gin.Context) {
 	}
 	defer img.Close()
 
-	err = user.SaveBgImage(img)
+	bgImageUrl, err := user.SaveBgImage(img)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusNoContent, gin.H{})
+	response := UrlDto{
+		Url: bgImageUrl.String(),
+	}
+
+	ctx.JSON(http.StatusNoContent, response)
 }

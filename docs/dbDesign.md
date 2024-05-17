@@ -9,6 +9,8 @@
 - biography
     - text
     - null ok
+- icon_url
+- bgimage_url
 - created_at
     - timestamp
 

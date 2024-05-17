@@ -13,6 +13,8 @@ type User struct {
 	UserName            UserName
 	DisplayName         DisplayName
 	Biography           Biography
+	IconUrl             ImageUrl
+	BgImageUrl          ImageUrl
 	CreatedAt           time.Time
 }
 
@@ -88,12 +90,28 @@ func (u *User) FollowRequests() ([]*User, error) {
 	return (*u.userRepository).FollowRequestUserList(u)
 }
 
-func (u *User) SaveIcon(file io.Reader) error {
-	return (*u.userImageRepository).SaveIcon(u, file)
+func (u *User) SaveIcon(file io.Reader) (ImageUrl, error) {
+	iconUrl, err := (*u.userImageRepository).SaveIcon(u, file)
+	if err != nil {
+		return "", err
+	}
+
+	u.IconUrl = iconUrl
+	(*u.userRepository).Save(u)
+
+	return iconUrl, nil
 }
 
-func (u *User) SaveBgImage(file io.Reader) error {
-	return (*u.userImageRepository).SaveBgImage(u, file)
+func (u *User) SaveBgImage(file io.Reader) (ImageUrl, error) {
+	bgImageUrl, err := (*u.userImageRepository).SaveBgImage(u, file)
+	if err != nil {
+		return "", err
+	}
+
+	u.BgImageUrl = bgImageUrl
+	(*u.userRepository).Save(u)
+
+	return bgImageUrl, nil
 }
 
 func (u *User) DeleteIcon() error {

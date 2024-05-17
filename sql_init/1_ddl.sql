@@ -131,6 +131,8 @@ CREATE TABLE `users` (
   `display_name` varchar(100) NOT NULL,
   `biography` text NOT NULL,
   `created_at` timestamp NOT NULL,
+  `icon_url` varchar(100) NOT NULL,
+  `bgimage_url` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `users_unique` (`user_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -145,4 +147,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-04-15 20:07:55
+-- Dump completed on 2024-05-17 21:17:45

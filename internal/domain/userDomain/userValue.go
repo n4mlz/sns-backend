@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"regexp"
 	"unicode/utf8"
+
+	"github.com/n4mlz/sns-backend/internal/utils"
 )
 
 const (
@@ -61,4 +63,14 @@ func (b Biography) String() string {
 
 func (b Biography) IsValid() bool {
 	return utf8.RuneCountInString(b.String()) <= MAX_BIOGRAPHY_LENGTH
+}
+
+type ImageUrl string
+
+func (i ImageUrl) String() string {
+	return string(i)
+}
+
+func (i ImageUrl) IsValid() bool {
+	return utils.IsUrl(i.String())
 }

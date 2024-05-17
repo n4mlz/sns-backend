@@ -17,6 +17,8 @@ type User struct {
 	DisplayName string    `gorm:"column:display_name;type:varchar(100);not null" json:"display_name"`
 	Biography   string    `gorm:"column:biography;type:text;not null" json:"biography"`
 	CreatedAt   time.Time `gorm:"column:created_at;type:timestamp;not null" json:"created_at"`
+	IconURL     string    `gorm:"column:icon_url;type:varchar(100);not null" json:"icon_url"`
+	BgimageURL  string    `gorm:"column:bgimage_url;type:varchar(100);not null" json:"bgimage_url"`
 }
 
 // TableName User's table name

@@ -39,6 +39,8 @@ func User(ctx *gin.Context) {
 		CreatedAt:       targetUser.CreatedAt,
 		Mutuals:         mutualCount,
 		FollowingStatus: sourceUser.GetFollowingStatus(targetUser),
+		IconUrl:         targetUser.IconUrl.String(),
+		BgImageUrl:      targetUser.BgImageUrl.String(),
 	}
 
 	ctx.JSON(http.StatusOK, response)
@@ -121,6 +123,8 @@ func MutualFollow(ctx *gin.Context) {
 			Biography:       user.Biography.String(),
 			CreatedAt:       user.CreatedAt,
 			FollowingStatus: followingStatus,
+			IconUrl:         user.IconUrl.String(),
+			BgImageUrl:      user.BgImageUrl.String(),
 		})
 	}
 
@@ -151,6 +155,8 @@ func UserPosts(ctx *gin.Context) {
 	poster := UserDisplayDto{
 		UserName:    targetUser.UserName.String(),
 		DisplayName: targetUser.DisplayName.String(),
+		IconUrl:     targetUser.IconUrl.String(),
+		BgImageUrl:  targetUser.BgImageUrl.String(),
 	}
 
 	var response []PostDto

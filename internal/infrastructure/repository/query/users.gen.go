@@ -32,6 +32,8 @@ func newUser(db *gorm.DB, opts ...gen.DOOption) user {
 	_user.DisplayName = field.NewString(tableName, "display_name")
 	_user.Biography = field.NewString(tableName, "biography")
 	_user.CreatedAt = field.NewTime(tableName, "created_at")
+	_user.IconURL = field.NewString(tableName, "icon_url")
+	_user.BgimageURL = field.NewString(tableName, "bgimage_url")
 
 	_user.fillFieldMap()
 
@@ -47,6 +49,8 @@ type user struct {
 	DisplayName field.String
 	Biography   field.String
 	CreatedAt   field.Time
+	IconURL     field.String
+	BgimageURL  field.String
 
 	fieldMap map[string]field.Expr
 }
@@ -68,6 +72,8 @@ func (u *user) updateTableName(table string) *user {
 	u.DisplayName = field.NewString(table, "display_name")
 	u.Biography = field.NewString(table, "biography")
 	u.CreatedAt = field.NewTime(table, "created_at")
+	u.IconURL = field.NewString(table, "icon_url")
+	u.BgimageURL = field.NewString(table, "bgimage_url")
 
 	u.fillFieldMap()
 
@@ -84,12 +90,14 @@ func (u *user) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (u *user) fillFieldMap() {
-	u.fieldMap = make(map[string]field.Expr, 5)
+	u.fieldMap = make(map[string]field.Expr, 7)
 	u.fieldMap["id"] = u.ID
 	u.fieldMap["user_name"] = u.UserName
 	u.fieldMap["display_name"] = u.DisplayName
 	u.fieldMap["biography"] = u.Biography
 	u.fieldMap["created_at"] = u.CreatedAt
+	u.fieldMap["icon_url"] = u.IconURL
+	u.fieldMap["bgimage_url"] = u.BgimageURL
 }
 
 func (u user) clone(db *gorm.DB) user {

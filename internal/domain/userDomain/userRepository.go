@@ -20,9 +20,9 @@ type IUserRepository interface {
 }
 
 type IUserImageRepository interface {
-	SaveIcon(user *User, file io.Reader) error
-	SaveBgImage(user *User, file io.Reader) error
+	SaveIcon(user *User, file io.Reader) (ImageUrl, error)
+	SaveBgImage(user *User, file io.Reader) (ImageUrl, error)
 	DeleteIcon(user *User) error
 	DeleteBgImage(user *User) error
-	MoveResources(sourceUser *User, targetUser *User) error
+	MoveResources(sourceUser *User, targetUser *User) (ImageUrl, ImageUrl, error)
 }

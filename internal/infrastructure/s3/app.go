@@ -20,6 +20,8 @@ var (
 
 var BUCKET_NAME = os.Getenv("S3_BUCKET_NAME")
 
+var RESOURCE_URL = os.Getenv("S3_RESOURCE_URL")
+
 type S3App struct {
 	Client     *s3.Client
 	BucketName string

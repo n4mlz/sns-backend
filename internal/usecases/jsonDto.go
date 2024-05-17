@@ -6,20 +6,24 @@ type UserNameDto struct {
 	UserName string `json:"userName"`
 }
 
-type UserDisplayDto struct {
-	UserName    string `json:"userName"`
-	DisplayName string `json:"displayName"`
-}
-
 type UserSettingsDto struct {
 	DisplayName string `json:"displayName"`
 	Biography   string `json:"biography"`
+}
+
+type UserDisplayDto struct {
+	UserName    string `json:"userName"`
+	DisplayName string `json:"displayName"`
+	IconUrl     string `json:"iconUrl"`
+	BgImageUrl  string `json:"bgImageUrl"`
 }
 
 type ProfileDto struct {
 	UserName    string `json:"userName"`
 	DisplayName string `json:"displayName"`
 	Biography   string `json:"biography"`
+	IconUrl     string `json:"iconUrl"`
+	BgImageUrl  string `json:"bgImageUrl"`
 }
 
 type UserDto struct {
@@ -28,6 +32,8 @@ type UserDto struct {
 	Biography       string    `json:"biography"`
 	CreatedAt       time.Time `json:"createdAt"`
 	FollowingStatus string    `json:"followingStatus"`
+	IconUrl         string    `json:"iconUrl"`
+	BgImageUrl      string    `json:"bgImageUrl"`
 }
 
 type UserDetailDto struct {
@@ -37,6 +43,12 @@ type UserDetailDto struct {
 	CreatedAt       time.Time `json:"createdAt"`
 	Mutuals         int       `json:"mutuals"`
 	FollowingStatus string    `json:"followingStatus"`
+	IconUrl         string    `json:"iconUrl"`
+	BgImageUrl      string    `json:"bgImageUrl"`
+}
+
+type UrlDto struct {
+	Url string `json:"url"`
 }
 
 type PostIdDto struct {
