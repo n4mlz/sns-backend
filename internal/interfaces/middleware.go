@@ -26,6 +26,22 @@ func authMiddleware() gin.HandlerFunc {
 	}
 }
 
+func authMiddlewareNoAbort() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		authHeader := ctx.GetHeader("Authorization")
+		idToken := strings.Replace(authHeader, "Bearer ", "", 1)
+
+		token, err := validation.VerifyIDToken(ctx, idToken)
+		if err != nil {
+			ctx.Set("userId", "")
+		} else {
+			ctx.Set("userId", token.Claims["user_id"].(string))
+		}
+
+		ctx.Next()
+	}
+}
+
 func SetCors(r *gin.Engine) {
 	r.Use(cors.New(cors.Config{
 		AllowOrigins: []string{

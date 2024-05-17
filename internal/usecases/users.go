@@ -10,13 +10,6 @@ import (
 )
 
 func User(ctx *gin.Context) {
-	sourceUserId := userDomain.UserId(ctx.GetString("userId"))
-	sourceUser, err := userDomain.Factory.GetUser(sourceUserId)
-	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
 	targetUserName := userDomain.UserName(ctx.Param("userName"))
 	targetUser, err := userDomain.Factory.GetUserByUserName(targetUserName)
 	if err != nil {
@@ -29,8 +22,25 @@ func User(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
 	mutualCount := visibleUserCount - 1
+
+	sourceUserId := userDomain.UserId(ctx.GetString("userId"))
+	sourceUser, err := userDomain.Factory.GetUser(sourceUserId)
+	if err != nil {
+		response := UserDetailDto{
+			UserName:        targetUser.UserName.String(),
+			DisplayName:     targetUser.DisplayName.String(),
+			Biography:       targetUser.Biography.String(),
+			CreatedAt:       targetUser.CreatedAt,
+			Mutuals:         mutualCount,
+			FollowingStatus: userDomain.NONE,
+			IconUrl:         targetUser.IconUrl.String(),
+			BgImageUrl:      targetUser.BgImageUrl.String(),
+		}
+
+		ctx.JSON(http.StatusOK, response)
+		return
+	}
 
 	response := UserDetailDto{
 		UserName:        targetUser.UserName.String(),
@@ -55,10 +65,33 @@ func MutualFollow(ctx *gin.Context) {
 		return
 	}
 
+	targetMutualList, err := targetUser.VisibleUsers()
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	sourceUserId := userDomain.UserId(ctx.GetString("userId"))
 	sourceUser, err := userDomain.Factory.GetUser(sourceUserId)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		var response []UserDto
+		for _, user := range targetMutualList {
+			if user.UserId == targetUser.UserId {
+				continue
+			}
+
+			response = append(response, UserDto{
+				UserName:        user.UserName.String(),
+				DisplayName:     user.DisplayName.String(),
+				Biography:       user.Biography.String(),
+				CreatedAt:       user.CreatedAt,
+				FollowingStatus: userDomain.NONE,
+				IconUrl:         user.IconUrl.String(),
+				BgImageUrl:      user.BgImageUrl.String(),
+			})
+		}
+
+		ctx.JSON(http.StatusOK, response)
 		return
 	}
 
@@ -69,13 +102,6 @@ func MutualFollow(ctx *gin.Context) {
 	}
 
 	sourceFollowerList, err := sourceUser.Followers()
-	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	targetMutualList, err := targetUser.VisibleUsers()
-
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
