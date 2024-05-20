@@ -35,7 +35,7 @@ CREATE TABLE `comments` (
   PRIMARY KEY (`id`),
   KEY `comments_posts_FK` (`post_id`),
   KEY `comments_users_FK` (`user_id`),
-  CONSTRAINT `comments_posts_FK` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`),
+  CONSTRAINT `comments_posts_FK` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`) ON DELETE CASCADE,
   CONSTRAINT `comments_users_FK` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -74,7 +74,7 @@ CREATE TABLE `likes` (
   PRIMARY KEY (`id`),
   KEY `likes_posts_FK` (`post_id`),
   KEY `likes_users_FK` (`user_id`),
-  CONSTRAINT `likes_posts_FK` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`),
+  CONSTRAINT `likes_posts_FK` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`) ON DELETE CASCADE,
   CONSTRAINT `likes_users_FK` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -113,7 +113,7 @@ CREATE TABLE `replies` (
   PRIMARY KEY (`id`),
   KEY `replies_comments_FK` (`comment_id`),
   KEY `replies_users_FK` (`user_id`),
-  CONSTRAINT `replies_comments_FK` FOREIGN KEY (`comment_id`) REFERENCES `comments` (`id`),
+  CONSTRAINT `replies_comments_FK` FOREIGN KEY (`comment_id`) REFERENCES `comments` (`id`) ON DELETE CASCADE,
   CONSTRAINT `replies_users_FK` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -147,4 +147,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-05-17 21:17:45
+-- Dump completed on 2024-05-21  3:03:04
