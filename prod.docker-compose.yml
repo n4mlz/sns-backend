@@ -1,0 +1,49 @@
+services:
+  main:
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: prod.Dockerfile
+      args:
+          FRONTEND_URL: ${FRONTEND_URL}
+          DB_USER: ${DB_USER}
+          DB_PASSWORD: ${DB_PASSWORD}
+          DB_HOST: ${DB_HOST}
+          DB_PORT: ${DB_PORT}
+          DB_NAME: ${DB_NAME}
+          S3_ACCOUNT_ID: ${S3_ACCOUNT_ID}
+          S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID}
+          S3_ACCESS_KEY_SECRET: ${S3_ACCESS_KEY_SECRET}
+          S3_ENDPOINT: ${S3_ENDPOINT}
+          S3_BUCKET_NAME: ${S3_BUCKET_NAME}
+          S3_RESOURCE_URL: ${S3_RESOURCE_URL}
+    container_name: backend
+    tty: true
+    ports:
+      - 8080:8080
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: mariadb:latest
+
+    container_name: db
+    tty: true
+    ports:
+      - 127.0.0.1:3306:3306
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      TZ: ${TZ}
+    volumes:
+      - type: bind
+        source: ./sql_init
+        target: /docker-entrypoint-initdb.d
+      - type: bind
+        source: ./sql_data
+        target: /var/lib/mysql
+    healthcheck:
+      test: "mariadb-admin ping -h localhost -u root -p$$MARIADB_ROOT_PASSWORD"
+      timeout: 5s
+      interval: 5s
+      retries: 10
