@@ -2,6 +2,7 @@ package interfaces
 
 import (
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -9,6 +10,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/n4mlz/sns-backend/internal/infrastructure/validation"
 )
+
+var FRONTEND_URL = os.Getenv("FRONTEND_URL")
 
 func authMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -45,8 +48,7 @@ func authMiddlewareNoAbort() gin.HandlerFunc {
 func SetCors(r *gin.Engine) {
 	r.Use(cors.New(cors.Config{
 		AllowOrigins: []string{
-			// TODO: add frontend domain
-			"http://localhost:3000",
+			FRONTEND_URL,
 		},
 		AllowMethods: []string{
 			"POST",

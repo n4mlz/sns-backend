@@ -25,3 +25,7 @@ serviceAccountKey.json
 
 # Docker Environment Variables
 .env
+
+# MariaDB data
+sql_data/*
+!sql_data/.gitkeep
