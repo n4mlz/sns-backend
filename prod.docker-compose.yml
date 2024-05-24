@@ -30,8 +30,6 @@ services:
 
     container_name: db
     tty: true
-    ports:
-      - 127.0.0.1:3306:3306
     environment:
       MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
       TZ: ${TZ}

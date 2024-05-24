@@ -36,6 +36,8 @@ ENV S3_BUCKET_NAME=${S3_BUCKET_NAME}
 ENV S3_RESOURCE_URL=${S3_RESOURCE_URL}
 
 COPY --from=build /go/bin/app /go/bin/app
+COPY serviceAccountKey.json .
+RUN apt update -y && apt-get install -y ca-certificates
 EXPOSE 8080
 
 CMD ["/go/bin/app"]
