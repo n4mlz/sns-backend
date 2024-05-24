@@ -164,18 +164,28 @@ func (app *S3App) DeleteBgImage(user *userDomain.User) error {
 }
 
 func (app *S3App) MoveResources(sourceUser *userDomain.User, targetUser *userDomain.User) (userDomain.ImageUrl, userDomain.ImageUrl, error) {
-	iconObjectKey := generateIconObjectKey(targetUser)
-	bgImageObjectKey := generateBgImageObjectKey(targetUser)
+	iconUrl := userDomain.ImageUrl("")
+	bgImageUrl := userDomain.ImageUrl("")
 
-	err := app.moveObject(urlToObjectKey(sourceUser.IconUrl.String()), iconObjectKey)
-	if err != nil {
-		return "", "", err
+	if sourceUser.IconUrl != "" {
+		iconObjectKey := generateIconObjectKey(targetUser)
+		err := app.moveObject(urlToObjectKey(sourceUser.IconUrl.String()), iconObjectKey)
+		if err != nil {
+			return "", "", err
+		}
+
+		iconUrl = userDomain.ImageUrl(objectKeyToUrl(iconObjectKey))
 	}
 
-	err = app.moveObject(urlToObjectKey(sourceUser.BgImageUrl.String()), bgImageObjectKey)
-	if err != nil {
-		return "", "", err
+	if sourceUser.BgImageUrl != "" {
+		bgImageObjectKey := generateBgImageObjectKey(targetUser)
+		err := app.moveObject(urlToObjectKey(sourceUser.BgImageUrl.String()), bgImageObjectKey)
+		if err != nil {
+			return "", "", err
+		}
+
+		bgImageUrl = userDomain.ImageUrl(objectKeyToUrl(bgImageObjectKey))
 	}
 
-	return userDomain.ImageUrl(objectKeyToUrl(iconObjectKey)), userDomain.ImageUrl(objectKeyToUrl(bgImageObjectKey)), nil
+	return iconUrl, bgImageUrl, nil
 }
