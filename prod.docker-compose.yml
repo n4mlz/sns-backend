@@ -2,6 +2,7 @@ services:
   main:
     env_file:
       - .env
+      - .env.prod
     build:
       context: .
       dockerfile: prod.Dockerfile
