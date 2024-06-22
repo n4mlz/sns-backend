@@ -9,6 +9,8 @@ func setSettingsRoutesFrom(r *gin.RouterGroup) {
 	settings := r.Group("/settings")
 	settings.Use(authMiddleware())
 	{
+		settings.DELETE("", usecases.DeleteUser)
+
 		profile := settings.Group("/profile")
 		{
 			profile.GET("", usecases.GetOwnProfile)

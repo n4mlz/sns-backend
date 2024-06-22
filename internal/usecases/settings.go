@@ -79,6 +79,23 @@ func SaveUserName(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, response)
 }
 
+func DeleteUser(ctx *gin.Context) {
+	userId := userDomain.UserId(ctx.GetString("userId"))
+	user, err := userDomain.Factory.GetUser(userId)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = userDomain.Factory.DeleteUser(user)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusNoContent, nil)
+}
+
 func SaveIcon(ctx *gin.Context) {
 	file, err := ctx.FormFile("image")
 	if err != nil {

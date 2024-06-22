@@ -41,6 +41,12 @@ func (r *UserRepository) Save(user *userDomain.User) error {
 	return query.User.WithContext(context.Background()).Save(gormUser)
 }
 
+func (r *UserRepository) Delete(user *userDomain.User) error {
+	gormUser := toGormUser(user)
+	_, err := query.User.WithContext(context.Background()).Delete(gormUser)
+	return err
+}
+
 func (r *UserRepository) FindById(userId userDomain.UserId) (*userDomain.User, error) {
 	if !r.IsExistUserId(userId) {
 		return nil, errors.New("user not found")
