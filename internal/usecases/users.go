@@ -58,41 +58,29 @@ func User(ctx *gin.Context) {
 }
 
 func MutualFollow(ctx *gin.Context) {
-	targetUserName := userDomain.UserName(ctx.Param("userName"))
-	targetUser, err := userDomain.Factory.GetUserByUserName(targetUserName)
-
+	sourceUserId := userDomain.UserId(ctx.GetString("userId"))
+	sourceUser, err := userDomain.Factory.GetUser(sourceUserId)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	targetUserName := userDomain.UserName(ctx.Param("userName"))
+	targetUser, err := userDomain.Factory.GetUserByUserName(targetUserName)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// TODO: move to domain layer (domain logic)
+	if !sourceUser.IsVisible(targetUser) {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "permission denied"})
 		return
 	}
 
 	targetMutualList, err := targetUser.VisibleUsers()
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	sourceUserId := userDomain.UserId(ctx.GetString("userId"))
-	sourceUser, err := userDomain.Factory.GetUser(sourceUserId)
-	if err != nil {
-		var response []UserDto
-		for _, user := range targetMutualList {
-			if user.UserId == targetUser.UserId {
-				continue
-			}
-
-			response = append(response, UserDto{
-				UserName:        user.UserName.String(),
-				DisplayName:     user.DisplayName.String(),
-				Biography:       user.Biography.String(),
-				CreatedAt:       user.CreatedAt,
-				FollowingStatus: userDomain.NONE,
-				IconUrl:         user.IconUrl.String(),
-				BgImageUrl:      user.BgImageUrl.String(),
-			})
-		}
-
-		ctx.JSON(http.StatusOK, response)
 		return
 	}
 
