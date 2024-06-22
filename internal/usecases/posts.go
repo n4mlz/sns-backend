@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/n4mlz/sns-backend/internal/domain/postDomain"
@@ -424,13 +425,20 @@ func Timeline(ctx *gin.Context) {
 		return
 	}
 
-	timeline, err := postDomain.Factory.GetPostsByVisibleUsers(user)
+	cursor := postDomain.PostId(ctx.Query("cursor"))
+	limit, err := strconv.Atoi(ctx.Query("limit"))
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	var response []PostDto
+	timeline, nextCursor, err := postDomain.Factory.GetPostsByVisibleUsers(user, cursor, limit)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var response postsWithCursor
 	for _, post := range timeline {
 		// TODO: fix N+1 problem
 
@@ -454,7 +462,7 @@ func Timeline(ctx *gin.Context) {
 			BgImageUrl:  post.Poster.BgImageUrl.String(),
 		}
 
-		response = append(response, PostDto{
+		response.Posts = append(response.Posts, PostDto{
 			PostId:    post.PostId.String(),
 			Poster:    poster,
 			Content:   post.Content.String(),
@@ -464,6 +472,8 @@ func Timeline(ctx *gin.Context) {
 			CreatedAt: post.CreatedAt,
 		})
 	}
+
+	response.Cursor = nextCursor.String()
 
 	ctx.JSON(http.StatusOK, response)
 }

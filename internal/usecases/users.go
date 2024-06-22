@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/n4mlz/sns-backend/internal/domain/postDomain"
@@ -172,7 +173,14 @@ func UserPosts(ctx *gin.Context) {
 		return
 	}
 
-	posts, err := postDomain.Factory.GetPostsByUser(sourceUser, targetUser)
+	cursor := postDomain.PostId(ctx.Query("cursor"))
+	limit, err := strconv.Atoi(ctx.Query("limit"))
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	posts, nextCursor, err := postDomain.Factory.GetPostsByUser(sourceUser, targetUser, cursor, limit)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -185,7 +193,7 @@ func UserPosts(ctx *gin.Context) {
 		BgImageUrl:  targetUser.BgImageUrl.String(),
 	}
 
-	var response []PostDto
+	var response postsWithCursor
 	for _, post := range posts {
 		// TODO: fix N+1 problem
 
@@ -202,7 +210,7 @@ func UserPosts(ctx *gin.Context) {
 			return
 		}
 
-		response = append(response, PostDto{
+		response.Posts = append(response.Posts, PostDto{
 			PostId:    post.PostId.String(),
 			Poster:    poster,
 			Content:   post.Content.String(),
@@ -212,6 +220,8 @@ func UserPosts(ctx *gin.Context) {
 			CreatedAt: post.CreatedAt,
 		})
 	}
+
+	response.Cursor = nextCursor.String()
 
 	ctx.JSON(http.StatusOK, response)
 }

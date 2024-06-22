@@ -114,41 +114,65 @@ func (r *PostRepository) FindPostById(postId postDomain.PostId) (*postDomain.Pos
 	return toPost(gormPost), err
 }
 
-func (r *PostRepository) FindPostsByUserId(userId userDomain.UserId) ([]*postDomain.Post, error) {
-	gormPosts, err := query.Post.WithContext(context.Background()).Where(query.Post.UserID.Eq(userId.String())).Find()
+func (r *PostRepository) FindPostsByUserId(userId userDomain.UserId, cursor postDomain.PostId, limit int) ([]*postDomain.Post, postDomain.PostId, error) {
+	var gormPosts []*model.Post
+	var err error
+	if cursor.String() == "" {
+		gormPosts, err = query.Post.WithContext(context.Background()).Order(query.Post.ID.Desc()).Where(query.Post.UserID.Eq(userId.String())).Limit(limit + 1).Find()
+	} else {
+		gormPosts, err = query.Post.WithContext(context.Background()).Order(query.Post.ID.Desc()).Where(query.Post.UserID.Eq(userId.String())).Where(query.Post.ID.Lte(cursor.String())).Limit(limit + 1).Find()
+	}
+
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	var posts []*postDomain.Post
-	for _, gormPost := range gormPosts {
+	var nextCursor postDomain.PostId
+	for i, gormPost := range gormPosts {
+		if i == limit {
+			nextCursor = postDomain.PostId(gormPost.ID)
+			break
+		}
+
 		// TODO: fix N+1 problem
 		posts = append(posts, toPost(gormPost))
 	}
 
-	posts = postDomain.Service.SortPostsByOldestToNewest(posts)
-	return posts, nil
+	return posts, nextCursor, nil
 }
 
-func (r *PostRepository) FindPostsByUserIds(userIds []userDomain.UserId) ([]*postDomain.Post, error) {
+func (r *PostRepository) FindPostsByUserIds(userIds []userDomain.UserId, cursor postDomain.PostId, limit int) ([]*postDomain.Post, postDomain.PostId, error) {
 	var userIdsString []string
 	for _, userId := range userIds {
 		userIdsString = append(userIdsString, userId.String())
 	}
 
-	gormPosts, err := query.Post.WithContext(context.Background()).Where(query.Post.UserID.In(userIdsString...)).Find()
+	var gormPosts []*model.Post
+	var err error
+	if cursor.String() == "" {
+		gormPosts, err = query.Post.WithContext(context.Background()).Order(query.Post.ID.Desc()).Where(query.Post.UserID.In(userIdsString...)).Limit(limit + 1).Find()
+	} else {
+		gormPosts, err = query.Post.WithContext(context.Background()).Order(query.Post.ID.Desc()).Where(query.Post.UserID.In(userIdsString...)).Where(query.Post.ID.Lte(cursor.String())).Limit(limit + 1).Find()
+	}
+
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	var posts []*postDomain.Post
-	for _, gormPost := range gormPosts {
+	var nextCursor postDomain.PostId
+	for i, gormPost := range gormPosts {
+		if i == limit {
+			nextCursor = postDomain.PostId(gormPost.ID)
+			break
+		}
+
 		// TODO: fix N+1 problem
 		posts = append(posts, toPost(gormPost))
 	}
 
-	posts = postDomain.Service.SortPostsByNewestToOldest(posts)
-	return posts, nil
+	return posts, nextCursor, nil
 }
 
 func (r *PostRepository) IsExistPostId(postId postDomain.PostId) bool {

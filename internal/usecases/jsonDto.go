@@ -79,6 +79,11 @@ type PostDetailDto struct {
 	CreatedAt time.Time      `json:"createdAt"`
 }
 
+type postsWithCursor struct {
+	Posts  []PostDto `json:"posts"`
+	Cursor string    `json:"cursor"`
+}
+
 type CreateCommentDto struct {
 	PostId  string `json:"postId"`
 	Content string `json:"content"`

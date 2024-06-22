@@ -4,6 +4,8 @@ import "unicode/utf8"
 
 const MAX_CONTENT_LENGTH = 256
 
+const MAX_CURSOR_PAGENATION_LIMIT = 128
+
 type PostId string
 
 func (pid PostId) String() string {

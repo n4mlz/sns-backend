@@ -28,7 +28,6 @@ services:
         condition: service_healthy
   db:
     image: mariadb:latest
-
     container_name: db
     tty: true
     environment:
