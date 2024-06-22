@@ -24,6 +24,8 @@ func SetDefaultPostFactory(postFactory *PostFactory) {
 }
 
 func (pf *PostFactory) CreatePostToRepository(poster *userDomain.User, content Content) (*Post, error) {
+	content = content.TrimWordGaps()
+
 	if !content.IsValid() {
 		return nil, errors.New("invalid content")
 	}
@@ -122,6 +124,8 @@ func (pf *PostFactory) DeletePostFromRepository(sourceUser *userDomain.User, pos
 }
 
 func (pf *PostFactory) CreateCommentToRepository(post *Post, commenter *userDomain.User, content Content) (*Comment, error) {
+	content = content.TrimWordGaps()
+
 	if !content.IsValid() {
 		return nil, errors.New("invalid content")
 	}
@@ -212,6 +216,8 @@ func (pf *PostFactory) DeleteCommentFromRepository(sourceUser *userDomain.User, 
 }
 
 func (pf *PostFactory) CreateReplyToRepository(comment *Comment, replier *userDomain.User, content Content) (*Reply, error) {
+	content = content.TrimWordGaps()
+
 	if !content.IsValid() {
 		return nil, errors.New("invalid content")
 	}

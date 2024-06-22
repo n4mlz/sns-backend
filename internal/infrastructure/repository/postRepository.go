@@ -23,6 +23,10 @@ func toGormPost(post *postDomain.Post) *model.Post {
 }
 
 func toPost(gormPost *model.Post) *postDomain.Post {
+	if gormPost == nil {
+		return nil
+	}
+
 	// TODO: fix N+1 problem
 	poster, _ := userDomain.Factory.GetUser(userDomain.UserId(gormPost.UserID))
 
@@ -45,6 +49,10 @@ func toGormComment(comment *postDomain.Comment) *model.Comment {
 }
 
 func toComment(gormComment *model.Comment) *postDomain.Comment {
+	if gormComment == nil {
+		return nil
+	}
+
 	// TODO: fix N+1 problem
 	commenter, _ := userDomain.Factory.GetUser(userDomain.UserId(gormComment.UserID))
 
@@ -80,6 +88,10 @@ func toGormReply(reply *postDomain.Reply) *model.Reply {
 }
 
 func toReply(gormReply *model.Reply) *postDomain.Reply {
+	if gormReply == nil {
+		return nil
+	}
+
 	// TODO: fix N+1 problem
 	replier, _ := userDomain.Factory.GetUser(userDomain.UserId(gormReply.UserID))
 

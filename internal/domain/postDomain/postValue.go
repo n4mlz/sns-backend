@@ -1,6 +1,11 @@
 package postDomain
 
-import "unicode/utf8"
+import (
+	"strings"
+	"unicode/utf8"
+
+	"github.com/n4mlz/sns-backend/internal/utils"
+)
 
 const MAX_CONTENT_LENGTH = 256
 
@@ -19,7 +24,12 @@ func (c Content) String() string {
 }
 
 func (c Content) IsValid() bool {
-	return utf8.RuneCountInString(c.String()) <= MAX_CONTENT_LENGTH
+	length := utf8.RuneCountInString(c.String())
+	return 1 <= length && length <= MAX_CONTENT_LENGTH
+}
+
+func (c Content) TrimWordGaps() Content {
+	return Content(strings.TrimSpace(utils.TrimWordGaps(c.String())))
 }
 
 type CommentId string
