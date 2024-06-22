@@ -114,6 +114,11 @@ func (r *PostRepository) FindPostById(postId postDomain.PostId) (*postDomain.Pos
 	return toPost(gormPost), err
 }
 
+func (r *PostRepository) FindLatestPostByUserId(userId userDomain.UserId) (*postDomain.Post, error) {
+	gormPost, err := query.Post.WithContext(context.Background()).Order(query.Post.ID.Desc()).Where(query.Post.UserID.Eq(userId.String())).Take()
+	return toPost(gormPost), err
+}
+
 func (r *PostRepository) FindPostsByUserId(userId userDomain.UserId, cursor postDomain.PostId, limit int) ([]*postDomain.Post, postDomain.PostId, error) {
 	var gormPosts []*model.Post
 	var err error

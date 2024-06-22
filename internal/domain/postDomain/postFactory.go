@@ -34,6 +34,11 @@ func (pf *PostFactory) CreatePostToRepository(poster *userDomain.User, content C
 		Content:        content,
 	}
 
+	latestPost, _ := (*pf.postRepository).FindLatestPostByUserId(poster.UserId)
+	if latestPost != nil && latestPost.Content == post.Content && latestPost.CreatedAt.Add(1*time.Minute).After(time.Now()) {
+		return nil, errors.New("duplicated post")
+	}
+
 	post, err := (*pf.postRepository).Create(post)
 	if err != nil {
 		return nil, err
