@@ -24,6 +24,8 @@ func SetDefaultPostFactory(postFactory *PostFactory) {
 }
 
 func (pf *PostFactory) CreatePostToRepository(poster *userDomain.User, content Content) (*Post, error) {
+	content = content.TrimWordGaps()
+
 	if !content.IsValid() {
 		return nil, errors.New("invalid content")
 	}
@@ -32,6 +34,11 @@ func (pf *PostFactory) CreatePostToRepository(poster *userDomain.User, content C
 		PostRepository: pf.postRepository,
 		Poster:         poster,
 		Content:        content,
+	}
+
+	latestPost, _ := (*pf.postRepository).FindLatestPostByUserId(poster.UserId)
+	if latestPost != nil && latestPost.Content == post.Content && latestPost.CreatedAt.Add(1*time.Minute).After(time.Now()) {
+		return nil, errors.New("duplicated post")
 	}
 
 	post, err := (*pf.postRepository).Create(post)
@@ -57,14 +64,18 @@ func (pf *PostFactory) GetPost(sourceUser *userDomain.User, postId PostId) (*Pos
 	return post, nil
 }
 
-func (pf *PostFactory) GetPostsByUser(sourceUser *userDomain.User, targetUser *userDomain.User) ([]*Post, error) {
+func (pf *PostFactory) GetPostsByUser(sourceUser *userDomain.User, targetUser *userDomain.User, cursor PostId, limit int) ([]*Post, PostId, error) {
 	if !targetUser.IsVisible(sourceUser) {
-		return nil, errors.New("permission denied")
+		return nil, "", errors.New("permission denied")
 	}
 
-	posts, err := (*pf.postRepository).FindPostsByUserId(targetUser.UserId)
+	if !(1 <= limit && limit <= MAX_CURSOR_PAGINATION_LIMIT) {
+		return nil, "", errors.New("invalid limit")
+	}
+
+	posts, nextCursor, err := (*pf.postRepository).FindPostsByUserId(targetUser.UserId, cursor, limit)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	var result []*Post
@@ -73,13 +84,17 @@ func (pf *PostFactory) GetPostsByUser(sourceUser *userDomain.User, targetUser *u
 		result = append(result, post)
 	}
 
-	return result, nil
+	return result, nextCursor, nil
 }
 
-func (pf *PostFactory) GetPostsByVisibleUsers(sourceUser *userDomain.User) ([]*Post, error) {
+func (pf *PostFactory) GetPostsByVisibleUsers(sourceUser *userDomain.User, cursor PostId, limit int) ([]*Post, PostId, error) {
+	if !(1 <= limit && limit <= MAX_CURSOR_PAGINATION_LIMIT) {
+		return nil, "", errors.New("invalid limit")
+	}
+
 	visibleUsers, err := sourceUser.VisibleUsers()
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	var userIds []userDomain.UserId
@@ -87,9 +102,9 @@ func (pf *PostFactory) GetPostsByVisibleUsers(sourceUser *userDomain.User) ([]*P
 		userIds = append(userIds, user.UserId)
 	}
 
-	posts, err := (*pf.postRepository).FindPostsByUserIds(userIds)
+	posts, nextCursor, err := (*pf.postRepository).FindPostsByUserIds(userIds, cursor, limit)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	var result []*Post
@@ -98,7 +113,7 @@ func (pf *PostFactory) GetPostsByVisibleUsers(sourceUser *userDomain.User) ([]*P
 		result = append(result, post)
 	}
 
-	return result, nil
+	return result, nextCursor, nil
 }
 
 func (pf *PostFactory) DeletePostFromRepository(sourceUser *userDomain.User, post *Post) error {
@@ -109,6 +124,8 @@ func (pf *PostFactory) DeletePostFromRepository(sourceUser *userDomain.User, pos
 }
 
 func (pf *PostFactory) CreateCommentToRepository(post *Post, commenter *userDomain.User, content Content) (*Comment, error) {
+	content = content.TrimWordGaps()
+
 	if !content.IsValid() {
 		return nil, errors.New("invalid content")
 	}
@@ -199,6 +216,8 @@ func (pf *PostFactory) DeleteCommentFromRepository(sourceUser *userDomain.User, 
 }
 
 func (pf *PostFactory) CreateReplyToRepository(comment *Comment, replier *userDomain.User, content Content) (*Reply, error) {
+	content = content.TrimWordGaps()
+
 	if !content.IsValid() {
 		return nil, errors.New("invalid content")
 	}

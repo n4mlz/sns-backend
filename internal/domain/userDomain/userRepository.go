@@ -4,6 +4,7 @@ import "io"
 
 type IUserRepository interface {
 	Save(user *User) error
+	Delete(user *User) error
 	FindById(id UserId) (*User, error)
 	FindByIds(ids []UserId) ([]*User, error)
 	FindByUserName(userName UserName) (*User, error)

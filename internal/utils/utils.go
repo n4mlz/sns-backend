@@ -1,6 +1,9 @@
 package utils
 
-import "net/url"
+import (
+	"net/url"
+	"strings"
+)
 
 type Set map[interface{}]struct{}
 
@@ -27,4 +30,8 @@ func (s Set) Contains(key interface{}) bool {
 func IsUrl(str string) bool {
 	u, err := url.Parse(str)
 	return err == nil && u.Scheme != "" && u.Host != ""
+}
+
+func TrimWordGaps(s string) string {
+	return strings.Join(strings.Fields(s), " ")
 }

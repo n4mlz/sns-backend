@@ -2,6 +2,7 @@ services:
   main:
     env_file:
       - .env
+      - .env.prod
     build:
       context: .
       dockerfile: prod.Dockerfile
@@ -21,13 +22,12 @@ services:
     container_name: backend
     tty: true
     ports:
-      - 8080:8080
+      - ${SNS_BACKEND_PORT}:8080
     depends_on:
       db:
         condition: service_healthy
   db:
     image: mariadb:latest
-
     container_name: db
     tty: true
     environment:

@@ -25,6 +25,10 @@ func toGormUser(user *userDomain.User) *model.User {
 }
 
 func toUser(gormUser *model.User) *userDomain.User {
+	if gormUser == nil {
+		return nil
+	}
+
 	return &userDomain.User{
 		UserId:      userDomain.UserId(gormUser.ID),
 		UserName:    userDomain.UserName(gormUser.UserName),
@@ -39,6 +43,12 @@ func toUser(gormUser *model.User) *userDomain.User {
 func (r *UserRepository) Save(user *userDomain.User) error {
 	gormUser := toGormUser(user)
 	return query.User.WithContext(context.Background()).Save(gormUser)
+}
+
+func (r *UserRepository) Delete(user *userDomain.User) error {
+	gormUser := toGormUser(user)
+	_, err := query.User.WithContext(context.Background()).Delete(gormUser)
+	return err
 }
 
 func (r *UserRepository) FindById(userId userDomain.UserId) (*userDomain.User, error) {

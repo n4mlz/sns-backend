@@ -17,5 +17,10 @@ func setSettingsRoutesFrom(r *gin.RouterGroup) {
 			profile.PUT("/icon", usecases.SaveIcon)
 			profile.PUT("/bgImage", usecases.SaveBgImage)
 		}
+
+		account := settings.Group("/account")
+		{
+			account.DELETE("", usecases.DeleteUser)
+		}
 	}
 }

@@ -149,3 +149,7 @@ func (uf *UserFactory) GetUserByUserName(userName UserName) (*User, error) {
 
 	return user, nil
 }
+
+func (uf *UserFactory) DeleteUser(user *User) error {
+	return (*uf.userRepository).Delete(user)
+}
