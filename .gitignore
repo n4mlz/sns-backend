@@ -25,6 +25,7 @@ serviceAccountKey.json
 
 # Docker Environment Variables
 .env
+.env.dev
 .env.prod
 
 # MariaDB data
