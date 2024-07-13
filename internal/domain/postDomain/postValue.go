@@ -9,7 +9,7 @@ import (
 
 const MAX_CONTENT_LENGTH = 256
 
-const MAX_CURSOR_PAGENATION_LIMIT = 128
+const MAX_CURSOR_PAGINATION_LIMIT = 128
 
 type PostId string
 

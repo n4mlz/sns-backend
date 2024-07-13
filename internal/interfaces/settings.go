@@ -9,8 +9,6 @@ func setSettingsRoutesFrom(r *gin.RouterGroup) {
 	settings := r.Group("/settings")
 	settings.Use(authMiddleware())
 	{
-		settings.DELETE("", usecases.DeleteUser)
-
 		profile := settings.Group("/profile")
 		{
 			profile.GET("", usecases.GetOwnProfile)
@@ -18,6 +16,11 @@ func setSettingsRoutesFrom(r *gin.RouterGroup) {
 			profile.PUT("/userName", usecases.SaveUserName)
 			profile.PUT("/icon", usecases.SaveIcon)
 			profile.PUT("/bgImage", usecases.SaveBgImage)
+		}
+
+		account := settings.Group("/account")
+		{
+			account.DELETE("", usecases.DeleteUser)
 		}
 	}
 }

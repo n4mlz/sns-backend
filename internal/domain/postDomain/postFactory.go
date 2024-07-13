@@ -69,7 +69,7 @@ func (pf *PostFactory) GetPostsByUser(sourceUser *userDomain.User, targetUser *u
 		return nil, "", errors.New("permission denied")
 	}
 
-	if !(1 <= limit && limit <= MAX_CURSOR_PAGENATION_LIMIT) {
+	if !(1 <= limit && limit <= MAX_CURSOR_PAGINATION_LIMIT) {
 		return nil, "", errors.New("invalid limit")
 	}
 
@@ -88,7 +88,7 @@ func (pf *PostFactory) GetPostsByUser(sourceUser *userDomain.User, targetUser *u
 }
 
 func (pf *PostFactory) GetPostsByVisibleUsers(sourceUser *userDomain.User, cursor PostId, limit int) ([]*Post, PostId, error) {
-	if !(1 <= limit && limit <= MAX_CURSOR_PAGENATION_LIMIT) {
+	if !(1 <= limit && limit <= MAX_CURSOR_PAGINATION_LIMIT) {
 		return nil, "", errors.New("invalid limit")
 	}
 

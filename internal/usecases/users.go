@@ -209,7 +209,7 @@ func UserPosts(ctx *gin.Context) {
 		})
 	}
 
-	response.Cursor = nextCursor.String()
+	response.NextCursor = nextCursor.String()
 
 	ctx.JSON(http.StatusOK, response)
 }

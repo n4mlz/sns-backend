@@ -80,8 +80,8 @@ type PostDetailDto struct {
 }
 
 type postsWithCursor struct {
-	Posts  []PostDto `json:"posts"`
-	Cursor string    `json:"cursor"`
+	Posts      []PostDto `json:"posts"`
+	NextCursor string    `json:"nextCursor"`
 }
 
 type CreateCommentDto struct {
