@@ -11,6 +11,11 @@ const MAX_CONTENT_LENGTH = 256
 
 const MAX_CURSOR_PAGINATION_LIMIT = 128
 
+const (
+	COMMENT = "comment"
+	REPLY   = "reply"
+)
+
 type PostId string
 
 func (pid PostId) String() string {
@@ -42,4 +47,20 @@ type ReplyId string
 
 func (rid ReplyId) String() string {
 	return string(rid)
+}
+
+type PostNotificationId string
+
+func (pnid PostNotificationId) String() string {
+	return string(pnid)
+}
+
+type NotificationType string
+
+func (nt NotificationType) String() string {
+	return string(nt)
+}
+
+func (nt NotificationType) IsValid() bool {
+	return nt == COMMENT || nt == REPLY
 }

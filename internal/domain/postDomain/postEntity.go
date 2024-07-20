@@ -93,10 +93,54 @@ type Comment struct {
 	CreatedAt time.Time
 }
 
+func (c *Comment) Participants() []*userDomain.User {
+	participantsSet := utils.NewTypedSet[*userDomain.User]()
+
+	post, err := Factory.GetPostById(c.PostId)
+	if err != nil {
+		return []*userDomain.User{}
+	}
+
+	participantsSet.Add(post.Poster)
+	participantsSet.Add(c.Commenter)
+
+	return participantsSet.Values()
+}
+
 type Reply struct {
 	ReplyId   ReplyId
 	CommentId CommentId
 	Replier   *userDomain.User
 	Content   Content
 	CreatedAt time.Time
+}
+
+func (r *Reply) Participants() []*userDomain.User {
+	participantsSet := utils.NewTypedSet[*userDomain.User]()
+
+	comment, err := Factory.GetCommentById(r.CommentId)
+	if err != nil {
+		return []*userDomain.User{}
+	}
+
+	post, err := Factory.GetPostById(comment.PostId)
+	if err != nil {
+		return []*userDomain.User{}
+	}
+
+	participantsSet.Add(post.Poster)
+	participantsSet.Add(comment.Commenter)
+	for _, reply := range comment.Replies {
+		participantsSet.Add(reply.Replier)
+	}
+
+	return participantsSet.Values()
+}
+
+type PostNotification struct {
+	PostNotificationId PostNotificationId
+	TargetUser         *userDomain.User
+	NotificationType   NotificationType
+	Comment            *Comment
+	Reply              *Reply
 }

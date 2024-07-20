@@ -27,4 +27,5 @@ type IPostRepository interface {
 	FindReplyById(replyId ReplyId) (*Reply, error)
 	IsExistCommentId(commentId CommentId) bool
 	IsExistReplyId(replyId ReplyId) bool
+	CreatePostNotifications([]*PostNotification) ([]*PostNotification, error)
 }
