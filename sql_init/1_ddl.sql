@@ -1,8 +1,8 @@
--- MariaDB dump 10.19-11.3.2-MariaDB, for debian-linux-gnu (x86_64)
+-- MariaDB dump 10.19-11.4.2-MariaDB, for debian-linux-gnu (x86_64)
 --
 -- Host: localhost    Database: sns
 -- ------------------------------------------------------
--- Server version	11.3.2-MariaDB-1:11.3.2+maria~ubu2204
+-- Server version	11.4.2-MariaDB-ubu2404
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -13,7 +13,7 @@
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+/*M!100616 SET @OLD_NOTE_VERBOSITY=@@NOTE_VERBOSITY, NOTE_VERBOSITY=0 */;
 
 CREATE DATABASE IF NOT EXISTS `sns`;
 
@@ -76,6 +76,28 @@ CREATE TABLE `likes` (
   KEY `likes_users_FK` (`user_id`),
   CONSTRAINT `likes_posts_FK` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`) ON DELETE CASCADE,
   CONSTRAINT `likes_users_FK` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `post_notifications`
+--
+
+DROP TABLE IF EXISTS `post_notifications`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `post_notifications` (
+  `id` varchar(100) NOT NULL,
+  `user_id` varchar(100) NOT NULL,
+  `comment_id` varchar(100) DEFAULT NULL,
+  `reply_id` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `post_notifications_users_FK` (`user_id`),
+  KEY `post_notifications_comments_FK` (`comment_id`),
+  KEY `post_notifications_replies_FK` (`reply_id`),
+  CONSTRAINT `post_notifications_comments_FK` FOREIGN KEY (`comment_id`) REFERENCES `comments` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `post_notifications_replies_FK` FOREIGN KEY (`reply_id`) REFERENCES `replies` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `post_notifications_users_FK` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -145,6 +167,6 @@ CREATE TABLE `users` (
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+/*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2024-06-22 16:28:54
+-- Dump completed on 2024-07-20 21:10:06

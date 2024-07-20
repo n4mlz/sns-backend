@@ -65,3 +65,15 @@
     - FK
 - following_user_id
     - FK
+
+## post_notifications
+- id
+    - PK, SK
+- user_id
+    - FK
+- comment_id
+    - FK
+    - null ok
+- reply_id
+    - FK
+    - null ok
