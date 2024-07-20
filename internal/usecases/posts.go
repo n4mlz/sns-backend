@@ -3,6 +3,7 @@ package usecases
 import (
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/n4mlz/sns-backend/internal/domain/postDomain"
@@ -470,6 +471,74 @@ func Timeline(ctx *gin.Context) {
 			Liked:     liked,
 			Comments:  commentCount,
 			CreatedAt: post.CreatedAt,
+		})
+	}
+
+	response.NextCursor = nextCursor.String()
+
+	ctx.JSON(http.StatusOK, response)
+}
+
+func GetNotifications(ctx *gin.Context) {
+	user, err := userDomain.Factory.GetUser(userDomain.UserId(ctx.GetString("userId")))
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	cursor := postDomain.PostNotificationId(ctx.Query("cursor"))
+	limit, err := strconv.Atoi(ctx.Query("limit"))
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	notifications, nextCursor, err := postDomain.Factory.GetPostNotifications(user, cursor, limit)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var response PostNotificationsWithCursor
+	for _, notification := range notifications {
+		// TODO: fix N+1 problem
+
+		var postId string
+		var notifier UserDisplayDto
+		var content string
+		var createdAt time.Time
+
+		switch notification.NotificationType {
+		case postDomain.COMMENT:
+			postId = notification.Comment.PostId.String()
+			notifier = UserDisplayDto{
+				UserName:    notification.Comment.Commenter.UserName.String(),
+				DisplayName: notification.Comment.Commenter.DisplayName.String(),
+				IconUrl:     notification.Comment.Commenter.IconUrl.String(),
+				BgImageUrl:  notification.Comment.Commenter.BgImageUrl.String(),
+			}
+			content = notification.Comment.Content.String()
+			createdAt = notification.Comment.CreatedAt
+
+		case postDomain.REPLY:
+			comment, _ := notification.Reply.ParentComment()
+			postId = comment.PostId.String()
+			notifier = UserDisplayDto{
+				UserName:    notification.Reply.Replier.UserName.String(),
+				DisplayName: notification.Reply.Replier.DisplayName.String(),
+				IconUrl:     notification.Reply.Replier.IconUrl.String(),
+				BgImageUrl:  notification.Reply.Replier.BgImageUrl.String(),
+			}
+			content = notification.Reply.Content.String()
+			createdAt = notification.Reply.CreatedAt
+		}
+
+		response.PostNotifications = append(response.PostNotifications, PostNotificationDto{
+			PostId:           postId,
+			Notifier:         notifier,
+			NotificationType: notification.NotificationType.String(),
+			Content:          content,
+			CreatedAt:        createdAt,
 		})
 	}
 

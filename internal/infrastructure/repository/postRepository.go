@@ -391,3 +391,31 @@ func (r *PostRepository) CreatePostNotifications(postNotifications []*postDomain
 
 	return result, nil
 }
+
+func (r *PostRepository) FindPostNotificationsByUserId(userId userDomain.UserId, cursor postDomain.PostNotificationId, limit int) ([]*postDomain.PostNotification, postDomain.PostNotificationId, error) {
+	var gormPostNotifications []*model.PostNotification
+	var err error
+	if cursor.String() == "" {
+		gormPostNotifications, err = query.PostNotification.WithContext(context.Background()).Order(query.PostNotification.ID.Desc()).Where(query.PostNotification.UserID.Eq(userId.String())).Limit(limit + 1).Find()
+	} else {
+		gormPostNotifications, err = query.PostNotification.WithContext(context.Background()).Order(query.PostNotification.ID.Desc()).Where(query.PostNotification.UserID.Eq(userId.String())).Where(query.PostNotification.ID.Lte(cursor.String())).Limit(limit + 1).Find()
+	}
+
+	if err != nil {
+		return nil, "", err
+	}
+
+	var postNotifications []*postDomain.PostNotification
+	var nextCursor postDomain.PostNotificationId
+	for i, gormPostNotification := range gormPostNotifications {
+		if i == limit {
+			nextCursor = postDomain.PostNotificationId(gormPostNotification.ID)
+			break
+		}
+
+		// TODO: fix N+1 problem
+		postNotifications = append(postNotifications, toPostNotification(gormPostNotification))
+	}
+
+	return postNotifications, nextCursor, nil
+}

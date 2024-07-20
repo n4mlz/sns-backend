@@ -32,5 +32,10 @@ func setPostsRoutesFrom(r *gin.RouterGroup) {
 			replies.POST("", usecases.CreateReply)
 			replies.DELETE("/:replyId", usecases.DeleteReply)
 		}
+
+		notifications := posts.Group("/notifications")
+		{
+			notifications.GET("", usecases.GetNotifications)
+		}
 	}
 }

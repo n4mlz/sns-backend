@@ -115,6 +115,10 @@ type Reply struct {
 	CreatedAt time.Time
 }
 
+func (r *Reply) ParentComment() (*Comment, error) {
+	return Factory.GetCommentById(r.CommentId)
+}
+
 func (r *Reply) Participants() []*userDomain.User {
 	participantsSet := utils.NewTypedSet[*userDomain.User]()
 

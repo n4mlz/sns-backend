@@ -326,3 +326,29 @@ func (pf *PostFactory) CreatePostNotificationToRepository(targetUsers []*userDom
 
 	return (*pf.postRepository).CreatePostNotifications(notifications)
 }
+
+func (pf *PostFactory) GetPostNotifications(sourceUser *userDomain.User, cursor PostNotificationId, limit int) ([]*PostNotification, PostNotificationId, error) {
+	if !(1 <= limit && limit <= MAX_CURSOR_PAGINATION_LIMIT) {
+		return nil, "", errors.New("invalid limit")
+	}
+
+	notifications, nextCursor, err := (*pf.postRepository).FindPostNotificationsByUserId(sourceUser.UserId, cursor, limit)
+	if err != nil {
+		return nil, "", err
+	}
+
+	var result []*PostNotification
+	for _, notification := range notifications {
+		if notification.NotificationType == COMMENT {
+			if sourceUser.IsMutual(notification.Comment.Commenter) {
+				result = append(result, notification)
+			}
+		} else if notification.NotificationType == REPLY {
+			if sourceUser.IsMutual(notification.Reply.Replier) {
+				result = append(result, notification)
+			}
+		}
+	}
+
+	return result, nextCursor, nil
+}
