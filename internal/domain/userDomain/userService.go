@@ -25,3 +25,13 @@ func (us *UserService) UserNameToUserId(userName UserName) (UserId, error) {
 func (us *UserService) IsExistUserName(userName UserName) bool {
 	return (*us.UserRepository).IsExistUserName(userName)
 }
+
+func (us *UserService) ExtractMutualUsers(sourceUser *User, targetUsers []*User) []*User {
+	var result []*User
+	for _, targetUser := range targetUsers {
+		if sourceUser.IsMutual(targetUser) {
+			result = append(result, targetUser)
+		}
+	}
+	return result
+}
