@@ -16,13 +16,14 @@ import (
 )
 
 var (
-	Q       = new(Query)
-	Comment *comment
-	Follow  *follow
-	Like    *like
-	Post    *post
-	Reply   *reply
-	User    *user
+	Q                = new(Query)
+	Comment          *comment
+	Follow           *follow
+	Like             *like
+	Post             *post
+	PostNotification *postNotification
+	Reply            *reply
+	User             *user
 )
 
 func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
@@ -31,44 +32,48 @@ func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	Follow = &Q.Follow
 	Like = &Q.Like
 	Post = &Q.Post
+	PostNotification = &Q.PostNotification
 	Reply = &Q.Reply
 	User = &Q.User
 }
 
 func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 	return &Query{
-		db:      db,
-		Comment: newComment(db, opts...),
-		Follow:  newFollow(db, opts...),
-		Like:    newLike(db, opts...),
-		Post:    newPost(db, opts...),
-		Reply:   newReply(db, opts...),
-		User:    newUser(db, opts...),
+		db:               db,
+		Comment:          newComment(db, opts...),
+		Follow:           newFollow(db, opts...),
+		Like:             newLike(db, opts...),
+		Post:             newPost(db, opts...),
+		PostNotification: newPostNotification(db, opts...),
+		Reply:            newReply(db, opts...),
+		User:             newUser(db, opts...),
 	}
 }
 
 type Query struct {
 	db *gorm.DB
 
-	Comment comment
-	Follow  follow
-	Like    like
-	Post    post
-	Reply   reply
-	User    user
+	Comment          comment
+	Follow           follow
+	Like             like
+	Post             post
+	PostNotification postNotification
+	Reply            reply
+	User             user
 }
 
 func (q *Query) Available() bool { return q.db != nil }
 
 func (q *Query) clone(db *gorm.DB) *Query {
 	return &Query{
-		db:      db,
-		Comment: q.Comment.clone(db),
-		Follow:  q.Follow.clone(db),
-		Like:    q.Like.clone(db),
-		Post:    q.Post.clone(db),
-		Reply:   q.Reply.clone(db),
-		User:    q.User.clone(db),
+		db:               db,
+		Comment:          q.Comment.clone(db),
+		Follow:           q.Follow.clone(db),
+		Like:             q.Like.clone(db),
+		Post:             q.Post.clone(db),
+		PostNotification: q.PostNotification.clone(db),
+		Reply:            q.Reply.clone(db),
+		User:             q.User.clone(db),
 	}
 }
 
@@ -82,33 +87,36 @@ func (q *Query) WriteDB() *Query {
 
 func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 	return &Query{
-		db:      db,
-		Comment: q.Comment.replaceDB(db),
-		Follow:  q.Follow.replaceDB(db),
-		Like:    q.Like.replaceDB(db),
-		Post:    q.Post.replaceDB(db),
-		Reply:   q.Reply.replaceDB(db),
-		User:    q.User.replaceDB(db),
+		db:               db,
+		Comment:          q.Comment.replaceDB(db),
+		Follow:           q.Follow.replaceDB(db),
+		Like:             q.Like.replaceDB(db),
+		Post:             q.Post.replaceDB(db),
+		PostNotification: q.PostNotification.replaceDB(db),
+		Reply:            q.Reply.replaceDB(db),
+		User:             q.User.replaceDB(db),
 	}
 }
 
 type queryCtx struct {
-	Comment ICommentDo
-	Follow  IFollowDo
-	Like    ILikeDo
-	Post    IPostDo
-	Reply   IReplyDo
-	User    IUserDo
+	Comment          ICommentDo
+	Follow           IFollowDo
+	Like             ILikeDo
+	Post             IPostDo
+	PostNotification IPostNotificationDo
+	Reply            IReplyDo
+	User             IUserDo
 }
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
-		Comment: q.Comment.WithContext(ctx),
-		Follow:  q.Follow.WithContext(ctx),
-		Like:    q.Like.WithContext(ctx),
-		Post:    q.Post.WithContext(ctx),
-		Reply:   q.Reply.WithContext(ctx),
-		User:    q.User.WithContext(ctx),
+		Comment:          q.Comment.WithContext(ctx),
+		Follow:           q.Follow.WithContext(ctx),
+		Like:             q.Like.WithContext(ctx),
+		Post:             q.Post.WithContext(ctx),
+		PostNotification: q.PostNotification.WithContext(ctx),
+		Reply:            q.Reply.WithContext(ctx),
+		User:             q.User.WithContext(ctx),
 	}
 }
 

@@ -226,6 +226,10 @@ func (pf *PostFactory) GetReply(sourceUser *userDomain.User, replyId ReplyId) (*
 	return reply, nil
 }
 
+func (pf *PostFactory) GetReplyById(replyId ReplyId) (*Reply, error) {
+	return (*pf.postRepository).FindReplyById(replyId)
+}
+
 func (pf *PostFactory) DeleteCommentFromRepository(sourceUser *userDomain.User, comment *Comment) error {
 	if sourceUser.UserId != comment.Commenter.UserId {
 		return errors.New("permission denied")

@@ -104,6 +104,64 @@ func toReply(gormReply *model.Reply) *postDomain.Reply {
 	}
 }
 
+func toGormPostNotification(postNotification *postDomain.PostNotification) *model.PostNotification {
+	var commentId *string
+	var replyId *string
+
+	if postNotification.NotificationType == postDomain.COMMENT {
+		commentIdValue := postNotification.Comment.CommentId.String()
+		commentId = &commentIdValue
+		replyId = nil
+	}
+
+	if postNotification.NotificationType == postDomain.REPLY {
+		replyIdValue := postNotification.Reply.ReplyId.String()
+		replyId = &replyIdValue
+		commentId = nil
+	}
+
+	return &model.PostNotification{
+		ID:        postNotification.PostNotificationId.String(),
+		UserID:    postNotification.TargetUser.UserId.String(),
+		CommentID: commentId,
+		ReplyID:   replyId,
+	}
+}
+
+func toPostNotification(gormPostNotification *model.PostNotification) *postDomain.PostNotification {
+	if gormPostNotification == nil {
+		return nil
+	}
+
+	// TODO: fix N+1 problem
+	targetUser, _ := userDomain.Factory.GetUser(userDomain.UserId(gormPostNotification.UserID))
+	var notificationType postDomain.NotificationType
+	var comment *postDomain.Comment
+	var reply *postDomain.Reply
+
+	// TODO: fix N+1 problem
+	if gormPostNotification.CommentID != nil {
+		commentId := postDomain.CommentId(*gormPostNotification.CommentID)
+		comment, _ = postDomain.Factory.GetCommentById(commentId)
+		notificationType = postDomain.COMMENT
+	}
+
+	// TODO: fix N+1 problem
+	if gormPostNotification.ReplyID != nil {
+		replyId := postDomain.ReplyId(*gormPostNotification.ReplyID)
+		reply, _ = postDomain.Factory.GetReplyById(replyId)
+		notificationType = postDomain.REPLY
+	}
+
+	return &postDomain.PostNotification{
+		PostNotificationId: postDomain.PostNotificationId(gormPostNotification.ID),
+		TargetUser:         targetUser,
+		NotificationType:   notificationType,
+		Comment:            comment,
+		Reply:              reply,
+	}
+}
+
 func (r *PostRepository) Create(post *postDomain.Post) (*postDomain.Post, error) {
 	gormPost := toGormPost(post)
 	gormPost.ID = xid.New().String()
@@ -308,4 +366,28 @@ func (r *PostRepository) IsExistCommentId(commentId postDomain.CommentId) bool {
 func (r *PostRepository) IsExistReplyId(replyId postDomain.ReplyId) bool {
 	count, _ := query.Reply.WithContext(context.Background()).Where(query.Reply.ID.Eq(replyId.String())).Count()
 	return count != 0
+}
+
+func (r *PostRepository) CreatePostNotifications(postNotifications []*postDomain.PostNotification) ([]*postDomain.PostNotification, error) {
+	var gormPostNotifications []*model.PostNotification
+
+	for _, postNotification := range postNotifications {
+		// TODO: fix N+1 problem
+		gormPostNotification := toGormPostNotification(postNotification)
+		gormPostNotification.ID = xid.New().String()
+		gormPostNotifications = append(gormPostNotifications, gormPostNotification)
+	}
+
+	err := query.PostNotification.WithContext(context.Background()).Save(gormPostNotifications...)
+	if err != nil {
+		return nil, err
+	}
+
+	var result []*postDomain.PostNotification
+	for _, gormPostNotification := range gormPostNotifications {
+		// TODO: fix N+1 problem
+		result = append(result, toPostNotification(gormPostNotification))
+	}
+
+	return result, nil
 }
