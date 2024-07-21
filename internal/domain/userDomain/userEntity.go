@@ -18,6 +18,16 @@ type User struct {
 	CreatedAt           time.Time
 }
 
+var NonVisibleUser = &User{
+	UserId:      NonVisibleUserId,
+	UserName:    NonVisibleUserName,
+	DisplayName: NonVisibleDisplayName,
+	Biography:   NonVisibleBiography,
+	IconUrl:     NonVisibleIconUrl,
+	BgImageUrl:  NonVisibleBgImageUrl,
+	CreatedAt:   NonVisibleCreatedAt,
+}
+
 func (u *User) Follow(user *User) error {
 	if u.IsFollowing(user) {
 		return errors.New("already following")
