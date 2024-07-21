@@ -3,6 +3,7 @@ package userDomain
 import (
 	"fmt"
 	"regexp"
+	"time"
 	"unicode/utf8"
 
 	"github.com/n4mlz/sns-backend/internal/utils"
@@ -26,6 +27,16 @@ const (
 	FOLLOWED  = "followed"
 	NONE      = "none"
 	OWN       = "own"
+)
+
+var (
+	NonVisibleUserId      = UserId("")
+	NonVisibleUserName    = UserName("")
+	NonVisibleDisplayName = DisplayName("相互フォローでないユーザー")
+	NonVisibleBiography   = Biography("")
+	NonVisibleIconUrl     = ImageUrl("")
+	NonVisibleBgImageUrl  = ImageUrl("")
+	NonVisibleCreatedAt   = time.Time{}
 )
 
 type UserId string

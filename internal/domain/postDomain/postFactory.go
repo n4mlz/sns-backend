@@ -177,7 +177,7 @@ func (pf *PostFactory) GetComment(sourceUser *userDomain.User, commentId Comment
 	for _, reply := range comment.Replies {
 		// fix N+1 problem
 		if !reply.Replier.IsVisible(sourceUser) {
-			reply.Replier = nil
+			reply.Replier = userDomain.NonVisibleUser
 			reply.Content = ""
 			reply.CreatedAt = time.Time{}
 		}
@@ -203,9 +203,8 @@ func (pf *PostFactory) GetComments(sourceUser *userDomain.User, post *Post) ([]*
 			for _, reply := range comment.Replies {
 				// TODO: fix N+1 problem
 				if !reply.Replier.IsVisible(sourceUser) {
-					reply.Replier = nil
+					reply.Replier = userDomain.NonVisibleUser
 					reply.Content = ""
-					reply.CreatedAt = time.Time{}
 				}
 			}
 			result = append(result, comment)
