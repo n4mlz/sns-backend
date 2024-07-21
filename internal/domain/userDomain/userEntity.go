@@ -44,6 +44,15 @@ func (u *User) IsFollowing(user *User) bool {
 	return (*u.userRepository).IsFollowing(u, user)
 }
 
+func (u *User) IsFollowed(user *User) bool {
+	return (*u.userRepository).IsFollowing(user, u)
+}
+
+func (u *User) IsMutual(user *User) bool {
+	followingStatus := u.GetFollowingStatus(user)
+	return followingStatus == MUTUAL
+}
+
 func (u *User) IsVisible(user *User) bool {
 	followingStatus := u.GetFollowingStatus(user)
 	return followingStatus == OWN || followingStatus == MUTUAL

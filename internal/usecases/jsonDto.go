@@ -108,3 +108,18 @@ type ReplyDto struct {
 	Content   string         `json:"content"`
 	CreatedAt time.Time      `json:"createdAt"`
 }
+
+type PostNotificationDto struct {
+	PostNotificationId string         `json:"postNotificationId"`
+	ReactedPostId      string         `json:"reactedPostId"`
+	ReactedPostContent string         `json:"reactedPostContent"`
+	Notifier           UserDisplayDto `json:"notifier"`
+	NotificationType   string         `json:"notificationType"`
+	Content            string         `json:"content"`
+	CreatedAt          time.Time      `json:"createdAt"`
+}
+
+type PostNotificationsWithCursor struct {
+	PostNotifications []PostNotificationDto `json:"postNotifications"`
+	NextCursor        string                `json:"nextCursor"`
+}

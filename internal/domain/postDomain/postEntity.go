@@ -93,10 +93,59 @@ type Comment struct {
 	CreatedAt time.Time
 }
 
+func (c *Comment) Participants() []*userDomain.User {
+	participantsMap := map[userDomain.UserId]*userDomain.User{}
+
+	post, err := Factory.GetPostById(c.PostId)
+	if err != nil {
+		return []*userDomain.User{}
+	}
+
+	participantsMap[post.Poster.UserId] = post.Poster
+	participantsMap[c.Commenter.UserId] = c.Commenter
+
+	return utils.MapValues(participantsMap)
+}
+
 type Reply struct {
 	ReplyId   ReplyId
 	CommentId CommentId
 	Replier   *userDomain.User
 	Content   Content
 	CreatedAt time.Time
+}
+
+func (r *Reply) ParentComment() (*Comment, error) {
+	return Factory.GetCommentById(r.CommentId)
+}
+
+func (r *Reply) Participants() []*userDomain.User {
+	participantsMap := map[userDomain.UserId]*userDomain.User{}
+
+	comment, err := Factory.GetCommentById(r.CommentId)
+	if err != nil {
+		return []*userDomain.User{}
+	}
+
+	post, err := Factory.GetPostById(comment.PostId)
+	if err != nil {
+		return []*userDomain.User{}
+	}
+
+	participantsMap[post.Poster.UserId] = post.Poster
+	participantsMap[comment.Commenter.UserId] = comment.Commenter
+	for _, reply := range comment.Replies {
+		participantsMap[reply.Replier.UserId] = reply.Replier
+	}
+
+	return utils.MapValues(participantsMap)
+}
+
+type PostNotification struct {
+	PostNotificationId PostNotificationId
+	TargetUser         *userDomain.User
+	NotificationType   NotificationType
+	ReactedPost        *Post
+	Comment            *Comment
+	Reply              *Reply
 }

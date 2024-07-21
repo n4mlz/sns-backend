@@ -2,6 +2,7 @@ package postDomain
 
 import (
 	"errors"
+	"log"
 	"time"
 
 	"github.com/n4mlz/sns-backend/internal/domain/userDomain"
@@ -57,6 +58,17 @@ func (pf *PostFactory) GetPost(sourceUser *userDomain.User, postId PostId) (*Pos
 
 	if !post.Poster.IsVisible(sourceUser) {
 		return nil, errors.New("permission denied")
+	}
+
+	post.PostRepository = pf.postRepository
+
+	return post, nil
+}
+
+func (pf *PostFactory) GetPostById(postId PostId) (*Post, error) {
+	post, err := (*pf.postRepository).FindPostById(postId)
+	if err != nil {
+		return nil, err
 	}
 
 	post.PostRepository = pf.postRepository
@@ -145,7 +157,11 @@ func (pf *PostFactory) CreateCommentToRepository(post *Post, commenter *userDoma
 		return nil, err
 	}
 
-	return comment, nil
+	notifyTargetUsers := userDomain.Service.ExtractMutualUsers(commenter, comment.Participants())
+
+	_, err = pf.CreatePostNotificationToRepository(notifyTargetUsers, comment.CommentId, "")
+
+	return comment, err
 }
 
 func (pf *PostFactory) GetComment(sourceUser *userDomain.User, commentId CommentId) (*Comment, error) {
@@ -168,6 +184,10 @@ func (pf *PostFactory) GetComment(sourceUser *userDomain.User, commentId Comment
 	}
 
 	return comment, nil
+}
+
+func (pf *PostFactory) GetCommentById(commentId CommentId) (*Comment, error) {
+	return (*pf.postRepository).FindCommentById(commentId)
 }
 
 func (pf *PostFactory) GetComments(sourceUser *userDomain.User, post *Post) ([]*Comment, error) {
@@ -207,6 +227,10 @@ func (pf *PostFactory) GetReply(sourceUser *userDomain.User, replyId ReplyId) (*
 	return reply, nil
 }
 
+func (pf *PostFactory) GetReplyById(replyId ReplyId) (*Reply, error) {
+	return (*pf.postRepository).FindReplyById(replyId)
+}
+
 func (pf *PostFactory) DeleteCommentFromRepository(sourceUser *userDomain.User, comment *Comment) error {
 	if sourceUser.UserId != comment.Commenter.UserId {
 		return errors.New("permission denied")
@@ -237,7 +261,13 @@ func (pf *PostFactory) CreateReplyToRepository(comment *Comment, replier *userDo
 		return nil, err
 	}
 
-	return reply, nil
+	log.Print(reply.Participants())
+	notifyTargetUsers := userDomain.Service.ExtractMutualUsers(replier, reply.Participants())
+	log.Print(notifyTargetUsers)
+
+	_, err = pf.CreatePostNotificationToRepository(notifyTargetUsers, "", reply.ReplyId)
+
+	return reply, err
 }
 
 func (pf *PostFactory) DeleteReplyFromRepository(sourceUser *userDomain.User, reply *Reply) error {
@@ -246,4 +276,82 @@ func (pf *PostFactory) DeleteReplyFromRepository(sourceUser *userDomain.User, re
 	}
 
 	return (*pf.postRepository).DeleteReply(reply)
+}
+
+func (pf *PostFactory) CreatePostNotificationToRepository(targetUsers []*userDomain.User, commentId CommentId, replyId ReplyId) ([]*PostNotification, error) {
+	if (commentId == "" && replyId == "") || (commentId != "" && replyId != "") {
+		return nil, errors.New("invalid notification")
+	}
+
+	var notifications []*PostNotification
+
+	if commentId != "" {
+		comment, err := (*pf.postRepository).FindCommentById(commentId)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, targetUser := range targetUsers {
+			if !targetUser.IsVisible(comment.Commenter) || comment.Commenter.UserId == targetUser.UserId {
+				continue
+			}
+
+			notification := &PostNotification{
+				TargetUser:       targetUser,
+				NotificationType: COMMENT,
+				Comment:          comment,
+			}
+
+			notifications = append(notifications, notification)
+		}
+	}
+
+	if replyId != "" {
+		reply, err := (*pf.postRepository).FindReplyById(replyId)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, targetUser := range targetUsers {
+			if !targetUser.IsVisible(reply.Replier) || reply.Replier.UserId == targetUser.UserId {
+				continue
+			}
+
+			notification := &PostNotification{
+				TargetUser:       targetUser,
+				NotificationType: REPLY,
+				Reply:            reply,
+			}
+
+			notifications = append(notifications, notification)
+		}
+	}
+
+	return (*pf.postRepository).CreatePostNotifications(notifications)
+}
+
+func (pf *PostFactory) GetPostNotifications(sourceUser *userDomain.User, cursor PostNotificationId, limit int) ([]*PostNotification, PostNotificationId, error) {
+	if !(1 <= limit && limit <= MAX_CURSOR_PAGINATION_LIMIT) {
+		return nil, "", errors.New("invalid limit")
+	}
+
+	notifications, nextCursor, err := (*pf.postRepository).FindPostNotificationsByUserId(sourceUser.UserId, cursor, limit)
+	if err != nil {
+		return nil, "", err
+	}
+
+	var result []*PostNotification
+	for _, notification := range notifications {
+		if notification.NotificationType == COMMENT {
+			if sourceUser.IsMutual(notification.Comment.Commenter) {
+				result = append(result, notification)
+			}
+		} else if notification.NotificationType == REPLY {
+			if sourceUser.IsMutual(notification.Reply.Replier) {
+				result = append(result, notification)
+			}
+		}
+	}
+
+	return result, nextCursor, nil
 }
