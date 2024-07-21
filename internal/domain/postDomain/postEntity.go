@@ -94,17 +94,17 @@ type Comment struct {
 }
 
 func (c *Comment) Participants() []*userDomain.User {
-	participantsSet := utils.NewTypedSet[*userDomain.User]()
+	participantsMap := map[userDomain.UserId]*userDomain.User{}
 
 	post, err := Factory.GetPostById(c.PostId)
 	if err != nil {
 		return []*userDomain.User{}
 	}
 
-	participantsSet.Add(post.Poster)
-	participantsSet.Add(c.Commenter)
+	participantsMap[post.Poster.UserId] = post.Poster
+	participantsMap[c.Commenter.UserId] = c.Commenter
 
-	return participantsSet.Values()
+	return utils.MapValues(participantsMap)
 }
 
 type Reply struct {
@@ -120,7 +120,7 @@ func (r *Reply) ParentComment() (*Comment, error) {
 }
 
 func (r *Reply) Participants() []*userDomain.User {
-	participantsSet := utils.NewTypedSet[*userDomain.User]()
+	participantsMap := map[userDomain.UserId]*userDomain.User{}
 
 	comment, err := Factory.GetCommentById(r.CommentId)
 	if err != nil {
@@ -132,19 +132,20 @@ func (r *Reply) Participants() []*userDomain.User {
 		return []*userDomain.User{}
 	}
 
-	participantsSet.Add(post.Poster)
-	participantsSet.Add(comment.Commenter)
+	participantsMap[post.Poster.UserId] = post.Poster
+	participantsMap[comment.Commenter.UserId] = comment.Commenter
 	for _, reply := range comment.Replies {
-		participantsSet.Add(reply.Replier)
+		participantsMap[reply.Replier.UserId] = reply.Replier
 	}
 
-	return participantsSet.Values()
+	return utils.MapValues(participantsMap)
 }
 
 type PostNotification struct {
 	PostNotificationId PostNotificationId
 	TargetUser         *userDomain.User
 	NotificationType   NotificationType
+	ReactedPost        *Post
 	Comment            *Comment
 	Reply              *Reply
 }

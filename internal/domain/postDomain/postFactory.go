@@ -2,6 +2,7 @@ package postDomain
 
 import (
 	"errors"
+	"log"
 	"time"
 
 	"github.com/n4mlz/sns-backend/internal/domain/userDomain"
@@ -260,7 +261,9 @@ func (pf *PostFactory) CreateReplyToRepository(comment *Comment, replier *userDo
 		return nil, err
 	}
 
+	log.Print(reply.Participants())
 	notifyTargetUsers := userDomain.Service.ExtractMutualUsers(replier, reply.Participants())
+	log.Print(notifyTargetUsers)
 
 	_, err = pf.CreatePostNotificationToRepository(notifyTargetUsers, "", reply.ReplyId)
 

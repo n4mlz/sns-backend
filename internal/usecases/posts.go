@@ -503,14 +503,12 @@ func GetNotifications(ctx *gin.Context) {
 	for _, notification := range notifications {
 		// TODO: fix N+1 problem
 
-		var postId string
 		var notifier UserDisplayDto
 		var content string
 		var createdAt time.Time
 
 		switch notification.NotificationType {
 		case postDomain.COMMENT:
-			postId = notification.Comment.PostId.String()
 			notifier = UserDisplayDto{
 				UserName:    notification.Comment.Commenter.UserName.String(),
 				DisplayName: notification.Comment.Commenter.DisplayName.String(),
@@ -521,8 +519,6 @@ func GetNotifications(ctx *gin.Context) {
 			createdAt = notification.Comment.CreatedAt
 
 		case postDomain.REPLY:
-			comment, _ := notification.Reply.ParentComment()
-			postId = comment.PostId.String()
 			notifier = UserDisplayDto{
 				UserName:    notification.Reply.Replier.UserName.String(),
 				DisplayName: notification.Reply.Replier.DisplayName.String(),
@@ -534,11 +530,13 @@ func GetNotifications(ctx *gin.Context) {
 		}
 
 		response.PostNotifications = append(response.PostNotifications, PostNotificationDto{
-			PostId:           postId,
-			Notifier:         notifier,
-			NotificationType: notification.NotificationType.String(),
-			Content:          content,
-			CreatedAt:        createdAt,
+			PostNotificationId: notification.PostNotificationId.String(),
+			ReactedPostId:      notification.ReactedPost.PostId.String(),
+			ReactedPostContent: notification.ReactedPost.Content.String(),
+			Notifier:           notifier,
+			NotificationType:   notification.NotificationType.String(),
+			Content:            content,
+			CreatedAt:          createdAt,
 		})
 	}
 
