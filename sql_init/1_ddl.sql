@@ -1,3 +1,4 @@
+/*!999999\- enable the sandbox mode */
 -- MariaDB dump 10.19-11.4.2-MariaDB, for debian-linux-gnu (x86_64)
 --
 -- Host: localhost    Database: sns
@@ -88,6 +89,7 @@ DROP TABLE IF EXISTS `post_notifications`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `post_notifications` (
   `id` varchar(100) NOT NULL,
+  `confirmed` tinyint(1) NOT NULL DEFAULT 0,
   `user_id` varchar(100) NOT NULL,
   `comment_id` varchar(100) DEFAULT NULL,
   `reply_id` varchar(100) DEFAULT NULL,
@@ -169,4 +171,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2024-07-20 21:10:06
+-- Dump completed on 2024-07-23 16:52:14

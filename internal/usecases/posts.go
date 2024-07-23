@@ -536,6 +536,7 @@ func GetNotifications(ctx *gin.Context) {
 			Notifier:           notifier,
 			NotificationType:   notification.NotificationType.String(),
 			Content:            content,
+			Confirmed:          notification.Confirmed,
 			CreatedAt:          createdAt,
 		})
 	}

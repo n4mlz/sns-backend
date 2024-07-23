@@ -122,6 +122,7 @@ func toGormPostNotification(postNotification *postDomain.PostNotification) *mode
 
 	return &model.PostNotification{
 		ID:        postNotification.PostNotificationId.String(),
+		Confirmed: postNotification.Confirmed,
 		UserID:    postNotification.TargetUser.UserId.String(),
 		CommentID: commentId,
 		ReplyID:   replyId,
@@ -159,6 +160,7 @@ func toPostNotification(gormPostNotification *model.PostNotification) *postDomai
 
 	return &postDomain.PostNotification{
 		PostNotificationId: postDomain.PostNotificationId(gormPostNotification.ID),
+		Confirmed:          gormPostNotification.Confirmed,
 		TargetUser:         targetUser,
 		NotificationType:   notificationType,
 		ReactedPost:        reactedPost,

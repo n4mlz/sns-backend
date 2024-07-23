@@ -116,6 +116,7 @@ type PostNotificationDto struct {
 	Notifier           UserDisplayDto `json:"notifier"`
 	NotificationType   string         `json:"notificationType"`
 	Content            string         `json:"content"`
+	Confirmed          bool           `json:"confirmed"`
 	CreatedAt          time.Time      `json:"createdAt"`
 }
 

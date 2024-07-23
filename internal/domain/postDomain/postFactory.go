@@ -296,6 +296,7 @@ func (pf *PostFactory) CreatePostNotificationToRepository(targetUsers []*userDom
 			}
 
 			notification := &PostNotification{
+				Confirmed:        false,
 				TargetUser:       targetUser,
 				NotificationType: COMMENT,
 				Comment:          comment,
@@ -317,6 +318,7 @@ func (pf *PostFactory) CreatePostNotificationToRepository(targetUsers []*userDom
 			}
 
 			notification := &PostNotification{
+				Confirmed:        false,
 				TargetUser:       targetUser,
 				NotificationType: REPLY,
 				Reply:            reply,

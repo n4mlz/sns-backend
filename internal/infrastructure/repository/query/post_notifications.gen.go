@@ -28,6 +28,7 @@ func newPostNotification(db *gorm.DB, opts ...gen.DOOption) postNotification {
 	tableName := _postNotification.postNotificationDo.TableName()
 	_postNotification.ALL = field.NewAsterisk(tableName)
 	_postNotification.ID = field.NewString(tableName, "id")
+	_postNotification.Confirmed = field.NewBool(tableName, "confirmed")
 	_postNotification.UserID = field.NewString(tableName, "user_id")
 	_postNotification.CommentID = field.NewString(tableName, "comment_id")
 	_postNotification.ReplyID = field.NewString(tableName, "reply_id")
@@ -42,6 +43,7 @@ type postNotification struct {
 
 	ALL       field.Asterisk
 	ID        field.String
+	Confirmed field.Bool
 	UserID    field.String
 	CommentID field.String
 	ReplyID   field.String
@@ -62,6 +64,7 @@ func (p postNotification) As(alias string) *postNotification {
 func (p *postNotification) updateTableName(table string) *postNotification {
 	p.ALL = field.NewAsterisk(table)
 	p.ID = field.NewString(table, "id")
+	p.Confirmed = field.NewBool(table, "confirmed")
 	p.UserID = field.NewString(table, "user_id")
 	p.CommentID = field.NewString(table, "comment_id")
 	p.ReplyID = field.NewString(table, "reply_id")
@@ -81,8 +84,9 @@ func (p *postNotification) GetFieldByName(fieldName string) (field.OrderExpr, bo
 }
 
 func (p *postNotification) fillFieldMap() {
-	p.fieldMap = make(map[string]field.Expr, 4)
+	p.fieldMap = make(map[string]field.Expr, 5)
 	p.fieldMap["id"] = p.ID
+	p.fieldMap["confirmed"] = p.Confirmed
 	p.fieldMap["user_id"] = p.UserID
 	p.fieldMap["comment_id"] = p.CommentID
 	p.fieldMap["reply_id"] = p.ReplyID
