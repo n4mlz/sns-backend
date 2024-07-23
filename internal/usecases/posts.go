@@ -545,3 +545,38 @@ func GetNotifications(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, response)
 }
+
+func ConfirmNotifications(ctx *gin.Context) {
+	var request PostNotificationIdsDto
+
+	err := ctx.ShouldBindJSON(&request)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, err := userDomain.Factory.GetUser(userDomain.UserId(ctx.GetString("userId")))
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var postNotificationIds []postDomain.PostNotificationId
+	for _, id := range request.PostNotificationIds {
+		postNotificationIds = append(postNotificationIds, postDomain.PostNotificationId(id))
+	}
+
+	postNotifications, err := postDomain.Factory.GetPostNotificationsByIds(user, postNotificationIds)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = postDomain.Factory.ConfirmPostNotifications(user, postNotifications)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusNoContent, gin.H{})
+}

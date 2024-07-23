@@ -124,3 +124,7 @@ type PostNotificationsWithCursor struct {
 	PostNotifications []PostNotificationDto `json:"postNotifications"`
 	NextCursor        string                `json:"nextCursor"`
 }
+
+type PostNotificationIdsDto struct {
+	PostNotificationIds []string `json:"postNotificationIds"`
+}

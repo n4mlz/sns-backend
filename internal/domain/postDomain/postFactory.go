@@ -356,3 +356,29 @@ func (pf *PostFactory) GetPostNotifications(sourceUser *userDomain.User, cursor 
 
 	return result, nextCursor, nil
 }
+
+func (pf *PostFactory) GetPostNotificationsByIds(sourceUser *userDomain.User, notificationIds []PostNotificationId) ([]*PostNotification, error) {
+	notifications, err := (*pf.postRepository).FindPostNotificationsByIds(notificationIds)
+	if err != nil {
+		return nil, err
+	}
+
+	var result []*PostNotification
+	for _, notification := range notifications {
+		if notification.TargetUser.UserId != sourceUser.UserId {
+			return nil, errors.New("permission denied")
+		}
+	}
+
+	return result, nil
+}
+
+func (pf *PostFactory) ConfirmPostNotifications(sourceUser *userDomain.User, notifications []*PostNotification) error {
+	for _, notification := range notifications {
+		if notification.TargetUser.UserId != sourceUser.UserId {
+			return errors.New("permission denied")
+		}
+	}
+
+	return (*pf.postRepository).ConfirmPostNotifications(notifications)
+}

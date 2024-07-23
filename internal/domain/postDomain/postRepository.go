@@ -29,4 +29,6 @@ type IPostRepository interface {
 	IsExistReplyId(replyId ReplyId) bool
 	CreatePostNotifications([]*PostNotification) ([]*PostNotification, error)
 	FindPostNotificationsByUserId(userDomain.UserId, PostNotificationId, int) ([]*PostNotification, PostNotificationId, error)
+	FindPostNotificationsByIds([]PostNotificationId) ([]*PostNotification, error)
+	ConfirmPostNotifications([]*PostNotification) error
 }

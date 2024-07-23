@@ -36,6 +36,7 @@ func setPostsRoutesFrom(r *gin.RouterGroup) {
 		notifications := posts.Group("/notifications")
 		{
 			notifications.GET("", usecases.GetNotifications)
+			notifications.PUT("/confirm", usecases.ConfirmNotifications)
 		}
 	}
 }
