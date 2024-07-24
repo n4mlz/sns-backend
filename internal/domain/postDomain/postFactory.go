@@ -363,14 +363,13 @@ func (pf *PostFactory) GetPostNotificationsByIds(sourceUser *userDomain.User, no
 		return nil, err
 	}
 
-	var result []*PostNotification
 	for _, notification := range notifications {
 		if notification.TargetUser.UserId != sourceUser.UserId {
 			return nil, errors.New("permission denied")
 		}
 	}
 
-	return result, nil
+	return notifications, nil
 }
 
 func (pf *PostFactory) ConfirmPostNotifications(sourceUser *userDomain.User, notifications []*PostNotification) error {
