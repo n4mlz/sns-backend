@@ -116,10 +116,15 @@ type PostNotificationDto struct {
 	Notifier           UserDisplayDto `json:"notifier"`
 	NotificationType   string         `json:"notificationType"`
 	Content            string         `json:"content"`
+	Confirmed          bool           `json:"confirmed"`
 	CreatedAt          time.Time      `json:"createdAt"`
 }
 
 type PostNotificationsWithCursor struct {
 	PostNotifications []PostNotificationDto `json:"postNotifications"`
 	NextCursor        string                `json:"nextCursor"`
+}
+
+type PostNotificationIdsDto struct {
+	PostNotificationIds []string `json:"postNotificationIds"`
 }

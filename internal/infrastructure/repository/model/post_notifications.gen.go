@@ -9,6 +9,7 @@ const TableNamePostNotification = "post_notifications"
 // PostNotification mapped from table <post_notifications>
 type PostNotification struct {
 	ID        string  `gorm:"column:id;type:varchar(100);primaryKey" json:"id"`
+	Confirmed bool    `gorm:"column:confirmed;type:tinyint(1);not null" json:"confirmed"`
 	UserID    string  `gorm:"column:user_id;type:varchar(100);not null;index:post_notifications_users_FK,priority:1" json:"user_id"`
 	CommentID *string `gorm:"column:comment_id;type:varchar(100);index:post_notifications_comments_FK,priority:1" json:"comment_id"`
 	ReplyID   *string `gorm:"column:reply_id;type:varchar(100);index:post_notifications_replies_FK,priority:1" json:"reply_id"`

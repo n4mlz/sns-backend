@@ -69,6 +69,9 @@
 ## post_notifications
 - id
     - PK, SK
+- confirmed
+    - bool (tinyint(1))
+    - default 0
 - user_id
     - FK
 - comment_id

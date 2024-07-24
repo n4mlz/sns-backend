@@ -144,6 +144,7 @@ func (r *Reply) Participants() []*userDomain.User {
 type PostNotification struct {
 	PostNotificationId PostNotificationId
 	TargetUser         *userDomain.User
+	Confirmed          bool
 	NotificationType   NotificationType
 	ReactedPost        *Post
 	Comment            *Comment

@@ -122,6 +122,7 @@ func toGormPostNotification(postNotification *postDomain.PostNotification) *mode
 
 	return &model.PostNotification{
 		ID:        postNotification.PostNotificationId.String(),
+		Confirmed: postNotification.Confirmed,
 		UserID:    postNotification.TargetUser.UserId.String(),
 		CommentID: commentId,
 		ReplyID:   replyId,
@@ -159,6 +160,7 @@ func toPostNotification(gormPostNotification *model.PostNotification) *postDomai
 
 	return &postDomain.PostNotification{
 		PostNotificationId: postDomain.PostNotificationId(gormPostNotification.ID),
+		Confirmed:          gormPostNotification.Confirmed,
 		TargetUser:         targetUser,
 		NotificationType:   notificationType,
 		ReactedPost:        reactedPost,
@@ -423,4 +425,34 @@ func (r *PostRepository) FindPostNotificationsByUserId(userId userDomain.UserId,
 	}
 
 	return postNotifications, nextCursor, nil
+}
+
+func (r *PostRepository) FindPostNotificationsByIds(postNotificationIds []postDomain.PostNotificationId) ([]*postDomain.PostNotification, error) {
+	var postNotificationIdsString []string
+	for _, postNotificationId := range postNotificationIds {
+		postNotificationIdsString = append(postNotificationIdsString, postNotificationId.String())
+	}
+
+	gormPostNotifications, err := query.PostNotification.WithContext(context.Background()).Where(query.PostNotification.ID.In(postNotificationIdsString...)).Find()
+	if err != nil {
+		return nil, err
+	}
+
+	var result []*postDomain.PostNotification
+	for _, gormPostNotification := range gormPostNotifications {
+		// TODO: fix N+1 problem
+		result = append(result, toPostNotification(gormPostNotification))
+	}
+
+	return result, nil
+}
+
+func (r *PostRepository) ConfirmPostNotifications(postNotifications []*postDomain.PostNotification) error {
+	var postNotificationIds []string
+	for _, postNotification := range postNotifications {
+		postNotificationIds = append(postNotificationIds, postNotification.PostNotificationId.String())
+	}
+
+	_, err := query.PostNotification.WithContext(context.Background()).Where(query.PostNotification.ID.In(postNotificationIds...)).Update(query.PostNotification.Confirmed, true)
+	return err
 }
