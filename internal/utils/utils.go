@@ -71,5 +71,15 @@ func IsUrl(str string) bool {
 }
 
 func TrimWordGaps(s string) string {
-	return strings.Join(strings.Fields(s), " ")
+	f := func(r rune) bool {
+		return r == ' ' || r == '\t' || r == '\r'
+	}
+
+	s = strings.Join(strings.FieldsFunc(s, f), " ")
+
+	f = func(r rune) bool {
+		return r == '\n'
+	}
+
+	return strings.Join(strings.FieldsFunc(s, f), "\n")
 }
