@@ -1,6 +1,6 @@
 services:
   backend:
-    image: golang:latest
+    image: golang:1.23
     container_name: backend
     tty: true
     ports:
@@ -14,7 +14,7 @@ services:
         target: /go/app
       - go_pkg_cache:/go/pkg
   db:
-    image: mariadb:latest
+    image: mariadb:11.6
     container_name: db
     tty: true
     ports:

@@ -1,4 +1,4 @@
-FROM golang:latest AS build
+FROM golang:1.23 AS build
 
 WORKDIR /app
 COPY go.mod go.sum ./
@@ -7,7 +7,7 @@ COPY . .
 
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o /go/bin/app
 
-FROM debian:12-slim AS prod
+FROM debian:12.8-slim AS prod
 
 ARG FRONTEND_URL
 ARG DB_USER
