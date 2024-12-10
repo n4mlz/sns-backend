@@ -29,9 +29,3 @@ serviceAccountKey.json
 # MariaDB data
 sql_data/*
 !sql_data/.gitkeep
-
-# metrics
-prometheus_data/*
-!prometheus_data/.gitkeep
-grafana_data/*
-!grafana_data/.gitkeep
