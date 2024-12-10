@@ -22,9 +22,8 @@ services:
     image: mariadb:11.6
     container_name: db
     tty: true
-    environment:
-      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
-      TZ: ${TZ}
+    env_file:
+      - .env
     volumes:
       - type: bind
         source: ./sql_init
