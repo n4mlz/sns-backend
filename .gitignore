@@ -25,9 +25,13 @@ serviceAccountKey.json
 
 # Docker Environment Variables
 .env
-.env.dev
-.env.prod
 
 # MariaDB data
 sql_data/*
 !sql_data/.gitkeep
+
+# metrics
+prometheus_data/*
+!prometheus_data/.gitkeep
+grafana_data/*
+!grafana_data/.gitkeep
