@@ -1,7 +1,7 @@
 services:
   backend:
     image: golang:latest
-    container_name: backend-dev
+    container_name: backend
     tty: true
     ports:
       - 8080:8080
@@ -15,7 +15,7 @@ services:
       - go_pkg_cache:/go/pkg
   db:
     image: mariadb:latest
-    container_name: db-dev
+    container_name: db
     tty: true
     ports:
       - 127.0.0.1:3306:3306
@@ -26,34 +26,6 @@ services:
       - type: bind
         source: ./sql_init
         target: /docker-entrypoint-initdb.d
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: prometheus-dev
-    tty: true
-    ports:
-      - 9090:9090
-    volumes:
-      - type: bind
-        source: ./prometheus
-        target: /etc/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-    user: ":"
-    restart: always
-  grafana:
-    image: grafana/grafana:latest
-    container_name: grafana-dev
-    tty: true
-    ports:
-      - 3001:3000
-    user: ":"
-    restart: always
-  node-exporter:
-    image: prom/node-exporter:latest
-    container_name: node-exporter-dev
-    tty: true
-    ports:
-      - 9100:9100
     restart: always
 
 volumes:
