@@ -4,6 +4,7 @@ services:
       - traefik.enable=true
       - traefik.docker.network=sns-network
       - traefik.http.routers.backend.entryPoints=web
+      - traefik.http.routers.backend.rule=PathPrefix(`/api`)
       - traefik.http.services.backend.loadbalancer.server.port=8080
     env_file:
       - .env
