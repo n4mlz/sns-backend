@@ -10,7 +10,6 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o /go/bin/a
 FROM debian:12.8-slim AS prod
 
 COPY --from=build /go/bin/app /go/bin/app
-COPY serviceAccountKey.json .
 RUN apt update -y && apt-get install -y ca-certificates
 EXPOSE 8080
 
