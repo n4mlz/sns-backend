@@ -9,10 +9,13 @@ import (
 	"github.com/n4mlz/sns-backend/internal/infrastructure/s3"
 	"github.com/n4mlz/sns-backend/internal/infrastructure/validation"
 	"github.com/n4mlz/sns-backend/internal/interfaces"
+	"github.com/n4mlz/sns-backend/internal/monitoring"
 )
 
 func main() {
 	r := gin.Default()
+	r.Use(monitoring.Middleware())
+	monitoring.Routes(r)
 	interfaces.SetCors(r)
 	r.ContextWithFallback = true
 
@@ -25,6 +28,13 @@ func main() {
 
 	db, err := repository.NewRepository()
 	if err != nil {
+		return
+	}
+	sqlDB, err := db.DB()
+	if err != nil {
+		return
+	}
+	if err := sqlDB.Ping(); err != nil {
 		return
 	}
 
@@ -53,6 +63,7 @@ func main() {
 	postDomain.SetDefaultPostService(postService)
 
 	h.SetupRoutes()
+	monitoring.SetReady(true)
 
 	h.Router.Run(":8080")
 }

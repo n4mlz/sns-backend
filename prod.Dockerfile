@@ -10,7 +10,8 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o /go/bin/a
 FROM debian:12.8-slim AS prod
 
 COPY --from=build /go/bin/app /go/bin/app
-RUN apt update -y && apt-get install -y ca-certificates
+RUN apt update -y && apt-get install -y --no-install-recommends ca-certificates curl \
+    && rm -rf /var/lib/apt/lists/*
 EXPOSE 8080
 
 CMD ["/go/bin/app"]
