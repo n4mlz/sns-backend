@@ -2,6 +2,7 @@ package s3
 
 import (
 	"bytes"
+	"errors"
 	"image"
 	_ "image/jpeg"
 	"image/png"
@@ -20,6 +21,12 @@ const (
 	BG_IMAGE_HEIGHT = 320
 )
 
+const (
+	maxImageBytes   = 10 << 20
+	maxImagePixels  = 64 * 1024 * 1024
+	maxImageSideLen = 8192
+)
+
 func resizeImage(img image.Image, width, height int) image.Image {
 	newImage := image.NewRGBA(image.Rect(0, 0, width, height))
 
@@ -29,8 +36,8 @@ func resizeImage(img image.Image, width, height int) image.Image {
 }
 
 func fotmatImageForIcon(file io.Reader) ([]byte, error) {
-	img, _, err := image.Decode(file)
-	if err != nil || img == nil {
+	img, err := decodeSafeImage(file)
+	if err != nil {
 		return nil, err
 	}
 
@@ -45,8 +52,8 @@ func fotmatImageForIcon(file io.Reader) ([]byte, error) {
 }
 
 func fotmatImageForBgImage(file io.Reader) ([]byte, error) {
-	img, _, err := image.Decode(file)
-	if err != nil || img == nil {
+	img, err := decodeSafeImage(file)
+	if err != nil {
 		return nil, err
 	}
 
@@ -58,4 +65,31 @@ func fotmatImageForBgImage(file io.Reader) ([]byte, error) {
 	}
 
 	return buf.Bytes(), nil
+}
+
+func decodeSafeImage(file io.Reader) (image.Image, error) {
+	data, err := io.ReadAll(io.LimitReader(file, maxImageBytes+1))
+	if err != nil {
+		return nil, err
+	}
+	if len(data) > maxImageBytes {
+		return nil, errors.New("image is too large")
+	}
+
+	config, format, err := image.DecodeConfig(bytes.NewReader(data))
+	if err != nil {
+		return nil, errors.New("invalid image")
+	}
+	if format != "png" && format != "jpeg" {
+		return nil, errors.New("unsupported image format")
+	}
+	if config.Width < 1 || config.Height < 1 || config.Width > maxImageSideLen || config.Height > maxImageSideLen || config.Width > maxImagePixels/config.Height {
+		return nil, errors.New("image dimensions are too large")
+	}
+
+	img, _, err := image.Decode(bytes.NewReader(data))
+	if err != nil {
+		return nil, errors.New("invalid image")
+	}
+	return img, nil
 }

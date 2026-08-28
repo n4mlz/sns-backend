@@ -15,6 +15,9 @@ import (
 func main() {
 	r := gin.Default()
 	r.Use(monitoring.Middleware())
+	r.Use(interfaces.SecurityHeaders())
+	r.Use(interfaces.RequestSizeLimit())
+	r.Use(interfaces.RateLimit())
 	monitoring.Routes(r)
 	interfaces.SetCors(r)
 	r.ContextWithFallback = true
