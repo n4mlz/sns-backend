@@ -1,6 +1,6 @@
 module github.com/n4mlz/sns-backend
 
-go 1.24
+go 1.25.0
 
 require (
 	firebase.google.com/go/v4 v4.13.0
@@ -12,7 +12,7 @@ require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/prometheus/client_golang v1.20.5
 	github.com/rs/xid v1.5.0
-	golang.org/x/image v0.18.0
+	golang.org/x/image v0.41.0
 	golang.org/x/time v0.3.0
 	google.golang.org/api v0.114.0
 	gorm.io/driver/mysql v1.5.4
@@ -82,14 +82,14 @@ require (
 	github.com/ugorji/go/codec v1.2.12 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	golang.org/x/arch v0.7.0 // indirect
-	golang.org/x/crypto v0.24.0 // indirect
-	golang.org/x/mod v0.17.0 // indirect
-	golang.org/x/net v0.26.0 // indirect
+	golang.org/x/crypto v0.50.0 // indirect
+	golang.org/x/mod v0.35.0 // indirect
+	golang.org/x/net v0.53.0 // indirect
 	golang.org/x/oauth2 v0.21.0 // indirect
-	golang.org/x/sync v0.7.0 // indirect
-	golang.org/x/sys v0.22.0 // indirect
-	golang.org/x/text v0.16.0 // indirect
-	golang.org/x/tools v0.21.1-0.20240508182429-e35e4ccd0d2d // indirect
+	golang.org/x/sync v0.20.0 // indirect
+	golang.org/x/sys v0.43.0 // indirect
+	golang.org/x/text v0.37.0 // indirect
+	golang.org/x/tools v0.44.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/appengine/v2 v2.0.2 // indirect
