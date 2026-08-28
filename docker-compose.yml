@@ -1,6 +1,6 @@
 services:
   backend:
-    image: golang:1.23
+    image: golang:1.27
     container_name: backend
     tty: true
     ports:
