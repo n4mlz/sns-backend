@@ -2,11 +2,11 @@ package s3
 
 import (
 	"bytes"
-	"context"
 	"fmt"
 	"io"
 	"net/url"
 	"path"
+	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
@@ -35,13 +35,21 @@ func urlToObjectKey(Url string) string {
 	if err != nil {
 		return ""
 	}
-
-	objectKey := u.Path
-	return objectKey[1:]
+	resource, err := url.Parse(RESOURCE_URL)
+	if err != nil || resource.Scheme == "" || resource.Host == "" || u.Scheme != resource.Scheme || u.Host != resource.Host {
+		return ""
+	}
+	objectKey := strings.TrimPrefix(u.Path, "/")
+	if objectKey == "" || path.Clean(objectKey) != objectKey || !strings.HasPrefix(objectKey, "images/users/") {
+		return ""
+	}
+	return objectKey
 }
 
 func (app *S3App) saveObject(objectKey string, object []byte, ContentType string) error {
-	_, err := app.Client.PutObject(context.TODO(), &s3.PutObjectInput{
+	ctx, cancel := s3OperationContext()
+	defer cancel()
+	_, err := app.Client.PutObject(ctx, &s3.PutObjectInput{
 		Bucket:      aws.String(app.BucketName),
 		Key:         aws.String(objectKey),
 		Body:        bytes.NewReader(object),
@@ -55,7 +63,9 @@ func (app *S3App) saveObject(objectKey string, object []byte, ContentType string
 }
 
 func (app *S3App) deleteObject(objectKey string) error {
-	_, err := app.Client.DeleteObject(context.TODO(), &s3.DeleteObjectInput{
+	ctx, cancel := s3OperationContext()
+	defer cancel()
+	_, err := app.Client.DeleteObject(ctx, &s3.DeleteObjectInput{
 		Bucket: aws.String(app.BucketName),
 		Key:    aws.String(objectKey),
 	})
@@ -67,7 +77,9 @@ func (app *S3App) deleteObject(objectKey string) error {
 }
 
 func (app *S3App) moveObject(sourceObjectKey string, targetObjectKey string) error {
-	result, err := app.Client.GetObject(context.TODO(), &s3.GetObjectInput{
+	ctx, cancel := s3OperationContext()
+	defer cancel()
+	result, err := app.Client.GetObject(ctx, &s3.GetObjectInput{
 		Bucket: aws.String(app.BucketName),
 		Key:    aws.String(sourceObjectKey),
 	})
@@ -77,12 +89,19 @@ func (app *S3App) moveObject(sourceObjectKey string, targetObjectKey string) err
 	}
 	defer result.Body.Close()
 
-	buf, err := io.ReadAll(result.Body)
+	buf, err := io.ReadAll(io.LimitReader(result.Body, maxImageBytes+1))
 	if err != nil {
 		return err
 	}
+	if len(buf) > maxImageBytes {
+		return fmt.Errorf("object is too large")
+	}
 
-	err = app.saveObject(targetObjectKey, buf, *result.ContentType)
+	contentType := "image/png"
+	if result.ContentType != nil && *result.ContentType != "" {
+		contentType = *result.ContentType
+	}
+	err = app.saveObject(targetObjectKey, buf, contentType)
 	if err != nil {
 		return err
 	}
@@ -143,6 +162,9 @@ func (app *S3App) DeleteIcon(user *userDomain.User) error {
 	}
 
 	objectKey := urlToObjectKey(user.IconUrl.String())
+	if objectKey == "" {
+		return nil
+	}
 
 	if err := app.deleteObject(objectKey); err != nil {
 		return err
@@ -156,6 +178,9 @@ func (app *S3App) DeleteBgImage(user *userDomain.User) error {
 	}
 
 	objectKey := urlToObjectKey(user.BgImageUrl.String())
+	if objectKey == "" {
+		return nil
+	}
 
 	if err := app.deleteObject(objectKey); err != nil {
 		return err

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -25,6 +26,10 @@ var RESOURCE_URL = os.Getenv("S3_RESOURCE_URL")
 type S3App struct {
 	Client     *s3.Client
 	BucketName string
+}
+
+func s3OperationContext() (context.Context, context.CancelFunc) {
+	return context.WithTimeout(context.Background(), 30*time.Second)
 }
 
 func newClient(accountId string, accessKeyId string, accessKeySecret string, endpoint string) (*s3.Client, error) {

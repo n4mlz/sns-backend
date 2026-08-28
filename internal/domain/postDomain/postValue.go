@@ -11,6 +11,8 @@ const MAX_CONTENT_LENGTH = 256
 
 const MAX_CURSOR_PAGINATION_LIMIT = 128
 
+const MAX_NOTIFICATION_BATCH_SIZE = 128
+
 const (
 	COMMENT = "comment"
 	REPLY   = "reply"

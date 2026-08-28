@@ -25,8 +25,7 @@ func (p *Post) Like(user *userDomain.User) error {
 		return errors.New("already liked")
 	}
 
-	(*p.PostRepository).Like(p, user)
-	return nil
+	return (*p.PostRepository).Like(p, user)
 }
 
 func (p *Post) Unlike(user *userDomain.User) error {
@@ -38,8 +37,7 @@ func (p *Post) Unlike(user *userDomain.User) error {
 		return errors.New("not liked")
 	}
 
-	(*p.PostRepository).Unlike(p, user)
-	return nil
+	return (*p.PostRepository).Unlike(p, user)
 }
 
 func (p *Post) IsLiked(user *userDomain.User) bool {

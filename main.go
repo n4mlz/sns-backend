@@ -1,6 +1,10 @@
 package main
 
 import (
+	"log"
+	"net/http"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/n4mlz/sns-backend/internal/domain/postDomain"
 	"github.com/n4mlz/sns-backend/internal/domain/userDomain"
@@ -14,6 +18,9 @@ import (
 
 func main() {
 	r := gin.Default()
+	if err := r.SetTrustedProxies([]string{"127.0.0.1", "::1", "172.16.0.0/12"}); err != nil {
+		log.Fatal(err)
+	}
 	r.Use(monitoring.Middleware())
 	r.Use(interfaces.SecurityHeaders())
 	r.Use(interfaces.RequestSizeLimit())
@@ -68,5 +75,17 @@ func main() {
 	h.SetupRoutes()
 	monitoring.SetReady(true)
 
-	h.Router.Run(":8080")
+	server := &http.Server{
+		Addr:              ":8080",
+		Handler:           h.Router,
+		ReadHeaderTimeout: 5 * time.Second,
+		ReadTimeout:       30 * time.Second,
+		WriteTimeout:      30 * time.Second,
+		IdleTimeout:       60 * time.Second,
+		MaxHeaderBytes:    1 << 20,
+	}
+
+	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		log.Fatal(err)
+	}
 }

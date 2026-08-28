@@ -145,7 +145,9 @@ func toPostNotification(gormPostNotification *model.PostNotification) *postDomai
 	if gormPostNotification.CommentID != nil {
 		commentId := postDomain.CommentId(*gormPostNotification.CommentID)
 		comment, _ = postDomain.Factory.GetCommentById(commentId)
-		reactedPost, _ = postDomain.Factory.GetPostById(comment.PostId)
+		if comment != nil {
+			reactedPost, _ = postDomain.Factory.GetPostById(comment.PostId)
+		}
 		notificationType = postDomain.COMMENT
 	}
 
@@ -153,8 +155,12 @@ func toPostNotification(gormPostNotification *model.PostNotification) *postDomai
 	if gormPostNotification.ReplyID != nil {
 		replyId := postDomain.ReplyId(*gormPostNotification.ReplyID)
 		reply, _ = postDomain.Factory.GetReplyById(replyId)
-		comment, _ = reply.ParentComment()
-		reactedPost, _ = postDomain.Factory.GetPostById(comment.PostId)
+		if reply != nil {
+			comment, _ = reply.ParentComment()
+			if comment != nil {
+				reactedPost, _ = postDomain.Factory.GetPostById(comment.PostId)
+			}
+		}
 		notificationType = postDomain.REPLY
 	}
 

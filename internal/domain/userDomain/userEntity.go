@@ -33,8 +33,7 @@ func (u *User) Follow(user *User) error {
 		return errors.New("already following")
 	}
 
-	(*u.userRepository).Follow(u, user)
-	return nil
+	return (*u.userRepository).Follow(u, user)
 }
 
 func (u *User) Unfollow(user *User) error {
@@ -46,8 +45,7 @@ func (u *User) Unfollow(user *User) error {
 		return errors.New("not following")
 	}
 
-	(*u.userRepository).Unfollow(u, user)
-	return nil
+	return (*u.userRepository).Unfollow(u, user)
 }
 
 func (u *User) IsFollowing(user *User) bool {

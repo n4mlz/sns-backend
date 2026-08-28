@@ -37,9 +37,9 @@ func RequestSizeLimit() gin.HandlerFunc {
 
 func RateLimit() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		clientIP, _, err := net.SplitHostPort(ctx.Request.RemoteAddr)
-		if err != nil {
-			clientIP = ctx.Request.RemoteAddr
+		clientIP := ctx.ClientIP()
+		if clientIP == "" {
+			clientIP, _, _ = net.SplitHostPort(ctx.Request.RemoteAddr)
 		}
 
 		clientLimiters.Lock()
@@ -79,12 +79,15 @@ func SecurityHeaders() gin.HandlerFunc {
 
 func authMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		authHeader := ctx.GetHeader("Authorization")
-		idToken := strings.Replace(authHeader, "Bearer ", "", 1)
+		idToken, ok := bearerToken(ctx.GetHeader("Authorization"))
+		if !ok {
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+			return
+		}
 
 		token, err := validation.VerifyIDToken(ctx, idToken)
 		if err != nil {
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, err)
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 			return
 		}
 
@@ -100,8 +103,12 @@ func authMiddleware() gin.HandlerFunc {
 
 func authMiddlewareNoAbort() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		authHeader := ctx.GetHeader("Authorization")
-		idToken := strings.Replace(authHeader, "Bearer ", "", 1)
+		idToken, ok := bearerToken(ctx.GetHeader("Authorization"))
+		if !ok {
+			ctx.Set("userId", "")
+			ctx.Next()
+			return
+		}
 
 		token, err := validation.VerifyIDToken(ctx, idToken)
 		if err != nil {
@@ -116,6 +123,14 @@ func authMiddlewareNoAbort() gin.HandlerFunc {
 
 		ctx.Next()
 	}
+}
+
+func bearerToken(header string) (string, bool) {
+	if !strings.HasPrefix(header, "Bearer ") {
+		return "", false
+	}
+	token := strings.TrimSpace(strings.TrimPrefix(header, "Bearer "))
+	return token, token != ""
 }
 
 func SetCors(r *gin.Engine) {

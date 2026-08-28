@@ -2,7 +2,6 @@ package postDomain
 
 import (
 	"errors"
-	"log"
 	"time"
 
 	"github.com/n4mlz/sns-backend/internal/domain/userDomain"
@@ -173,6 +172,10 @@ func (pf *PostFactory) GetComment(sourceUser *userDomain.User, commentId Comment
 	if !comment.Commenter.IsVisible(sourceUser) {
 		return nil, errors.New("permission denied")
 	}
+	post, err := (*pf.postRepository).FindPostById(comment.PostId)
+	if err != nil || post == nil || !post.Poster.IsVisible(sourceUser) {
+		return nil, errors.New("permission denied")
+	}
 
 	for _, reply := range comment.Replies {
 		// fix N+1 problem
@@ -222,6 +225,14 @@ func (pf *PostFactory) GetReply(sourceUser *userDomain.User, replyId ReplyId) (*
 	if !reply.Replier.IsVisible(sourceUser) {
 		return nil, errors.New("permission denied")
 	}
+	comment, err := (*pf.postRepository).FindCommentById(reply.CommentId)
+	if err != nil || comment == nil {
+		return nil, errors.New("permission denied")
+	}
+	post, err := (*pf.postRepository).FindPostById(comment.PostId)
+	if err != nil || post == nil || !post.Poster.IsVisible(sourceUser) {
+		return nil, errors.New("permission denied")
+	}
 
 	return reply, nil
 }
@@ -260,9 +271,7 @@ func (pf *PostFactory) CreateReplyToRepository(comment *Comment, replier *userDo
 		return nil, err
 	}
 
-	log.Print(reply.Participants())
 	notifyTargetUsers := userDomain.Service.ExtractMutualUsers(replier, reply.Participants())
-	log.Print(notifyTargetUsers)
 
 	_, err = pf.CreatePostNotificationToRepository(notifyTargetUsers, "", reply.ReplyId)
 
@@ -343,11 +352,14 @@ func (pf *PostFactory) GetPostNotifications(sourceUser *userDomain.User, cursor 
 
 	var result []*PostNotification
 	for _, notification := range notifications {
-		if notification.NotificationType == COMMENT {
+		if notification == nil || notification.ReactedPost == nil || !notification.ReactedPost.Poster.IsVisible(sourceUser) {
+			continue
+		}
+		if notification.NotificationType == COMMENT && notification.Comment != nil {
 			if sourceUser.IsMutual(notification.Comment.Commenter) {
 				result = append(result, notification)
 			}
-		} else if notification.NotificationType == REPLY {
+		} else if notification.NotificationType == REPLY && notification.Reply != nil {
 			if sourceUser.IsMutual(notification.Reply.Replier) {
 				result = append(result, notification)
 			}

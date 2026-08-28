@@ -554,6 +554,10 @@ func ConfirmNotifications(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	if len(request.PostNotificationIds) > postDomain.MAX_NOTIFICATION_BATCH_SIZE {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "too many notification ids"})
+		return
+	}
 
 	user, err := userDomain.Factory.GetUser(userDomain.UserId(ctx.GetString("userId")))
 	if err != nil {
