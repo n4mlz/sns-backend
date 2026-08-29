@@ -3,6 +3,7 @@ package validation
 import (
 	"context"
 	"log"
+	"os"
 
 	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/auth"
@@ -14,7 +15,8 @@ var FirebaseApp *firebase.App
 // initialize app with ServiceAccountKey.json
 func InitFirebaseApp() error {
 	opt := option.WithCredentialsFile("serviceAccountKey.json")
-	app, err := firebase.NewApp(context.Background(), nil, opt)
+	config := &firebase.Config{ProjectID: os.Getenv("FIREBASE_PROJECT_ID")}
+	app, err := firebase.NewApp(context.Background(), config, opt)
 	FirebaseApp = app
 
 	if err != nil {
