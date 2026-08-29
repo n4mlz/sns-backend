@@ -12,7 +12,7 @@ require (
 	github.com/gin-gonic/gin v1.12.0
 	github.com/prometheus/client_golang v1.24.1
 	github.com/rs/xid v1.6.0
-	golang.org/x/image v0.41.0
+	golang.org/x/image v0.45.0
 	golang.org/x/time v0.15.0
 	google.golang.org/api v0.295.0
 	gorm.io/driver/mysql v1.5.7
