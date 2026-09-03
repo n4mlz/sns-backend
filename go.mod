@@ -1,6 +1,6 @@
 module github.com/n4mlz/sns-backend
 
-go 1.25.0
+go 1.26.0
 
 require (
 	firebase.google.com/go/v4 v4.21.0
@@ -14,7 +14,7 @@ require (
 	github.com/rs/xid v1.6.0
 	golang.org/x/image v0.45.0
 	golang.org/x/time v0.15.0
-	google.golang.org/api v0.295.0
+	google.golang.org/api v0.297.0
 	gorm.io/driver/mysql v1.6.0
 	gorm.io/gen v0.3.29
 	gorm.io/gorm v1.30.0
